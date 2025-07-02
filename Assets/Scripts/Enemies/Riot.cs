@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Riot : MonoBehaviour,  IDecoyable
+public class Riot : MonoBehaviour,  IDecoyable, IEnemy
 
 {
+
+    // IEnemy implementation
+    public bool IsAlive => health != null && !health.IsDead;
+    public System.Action<IEnemy> OnEnemyDeath { get; set; }
+
     [Header("Decoy Settings")]
     [SerializeField] private bool hasHeadphones = true; // Riot kulaklık kullanıyor
     [SerializeField] private Sprite headphoneSprite; // Kulaklıklı sprite
@@ -36,9 +41,23 @@ public class Riot : MonoBehaviour,  IDecoyable
     // Start is called before the first frame update
     void Start()
     {
-        UpdateSprite();
-    }
 
+        UpdateSprite();
+
+        // Health event'lerini dinle
+        if (health != null)
+        {
+            health.OnDeath += OnRiotDeath_Internal;
+            health.OnRevive += OnEnemyRevive; // EKLENEN!
+        }
+
+        // GameManager'a kaydol
+        if (GameManager.Instance != null)
+        {
+            Debug.Log($"Registering enemy {gameObject.name}");
+            GameManager.Instance.RegisterEnemy(this);
+        }
+    }
     private void Awake()
     {
         health = GetComponent<Health>();
@@ -49,4 +68,34 @@ public class Riot : MonoBehaviour,  IDecoyable
             health = gameObject.AddComponent<Health>();
         }
     }
+
+    void OnEnemyRevive()
+    {
+        Debug.Log($"{gameObject.name} revived!");
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterEnemy(this);
+        }
+    }
+    void OnRiotDeath_Internal()
+    {
+        Debug.Log($"Riot {gameObject.name} died!");
+        OnEnemyDeath?.Invoke(this);
+
+    }
+
+    void OnDestroy()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UnregisterEnemy(this);
+        }
+        // Event listener'ı temizle
+        if (health != null)
+        {
+            health.OnDeath -= OnRiotDeath_Internal;
+            health.OnRevive -= OnEnemyRevive;
+        }
+    }
+
 }

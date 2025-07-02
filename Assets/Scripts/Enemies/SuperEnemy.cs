@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 
-public class SuperEnemy : MonoBehaviour, IDecoyable
+public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
 {
+    public bool IsAlive => health != null && !health.IsDead;
+    public System.Action<IEnemy> OnEnemyDeath { get; set; }
+
 
     [Header("Decoy Settings")]
     [SerializeField] private bool hasHeadphones = true;
@@ -42,9 +45,18 @@ public class SuperEnemy : MonoBehaviour, IDecoyable
         // Health event'lerini dinle
         if (health != null)
         {
-            health.OnDeath += OnSuperEnemyDeath;
+            health.OnDeath += OnSuperEnemyDeath_Internal;
+            health.OnRevive += OnEnemyRevive;
             health.OnTakeDamage += OnTakeDamage;
         }
+
+        if (GameManager.Instance != null)
+        {
+            Debug.Log($"Registering enemy {gameObject.name}");
+            GameManager.Instance.RegisterEnemy(this);
+        }
+        
+
 
     }
 
@@ -70,10 +82,15 @@ public class SuperEnemy : MonoBehaviour, IDecoyable
 
     void OnDestroy()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UnregisterEnemy(this);
+        }
         // Event listener'ı temizle
         if (health != null)
         {
-            health.OnDeath -= OnSuperEnemyDeath;
+            health.OnDeath -= OnSuperEnemyDeath_Internal;
+            health.OnRevive -= OnEnemyRevive;
             health.OnTakeDamage -= OnTakeDamage;
         }
     }
@@ -86,10 +103,20 @@ public class SuperEnemy : MonoBehaviour, IDecoyable
         // Hasar aldığında piercing mermi ateşle
         FirePiercingBullet();
     }
+    void OnEnemyRevive()
+    {
+        Debug.Log($"{gameObject.name} revived!");
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterEnemy(this);
+        }
+    }
 
-    void OnSuperEnemyDeath()
+    void OnSuperEnemyDeath_Internal()
     {
         Debug.Log($"SuperEnemy {gameObject.name} died!");
+        OnEnemyDeath?.Invoke(this);
+
     }
 
     void FirePiercingBullet()

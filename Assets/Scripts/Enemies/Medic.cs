@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
 
-public class Medic : MonoBehaviour, IDecoyable
+public class Medic : MonoBehaviour, IDecoyable,IEnemy
 {
+    //DO THE SAME THINGS FOR THIS IENEMY TOO
+    public bool IsAlive => health != null && !health.IsDead;
+    public System.Action<IEnemy> OnEnemyDeath { get; set; }
+
     [Header("Decoy Settings")]
     [SerializeField] private bool hasHeadphones = true; // Medic kulaklık kullanıyor
     [SerializeField] private Sprite headphoneSprite; // Kulaklıklı sprite
@@ -54,8 +58,15 @@ public class Medic : MonoBehaviour, IDecoyable
         // Health event'lerini dinle
         if (health != null)
         {
-            health.OnDeath += OnMedicDeath;
+            health.OnDeath += OnMedicDeath_Internal;
+            health.OnRevive += OnEnemyRevive;
             health.OnTakeDamage += OnTakeDamage;
+        }
+        // GameManager'a kaydol
+        if (GameManager.Instance != null)
+        {
+            Debug.Log($"Registering enemy {gameObject.name}"); 
+            GameManager.Instance.RegisterEnemy(this);
         }
 
     }
@@ -65,11 +76,25 @@ public class Medic : MonoBehaviour, IDecoyable
         // Event listener'ı temizle
         if (health != null)
         {
-            health.OnDeath -= OnMedicDeath;
+            health.OnDeath -= OnMedicDeath_Internal;
+            health.OnRevive -= OnEnemyRevive;
             health.OnTakeDamage -= OnTakeDamage;
         }
-    }
 
+        // GameManager'dan çıkar    
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UnregisterEnemy(this);
+        }
+    }
+    void OnEnemyRevive()
+    {
+        Debug.Log($"{gameObject.name} revived!");
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterEnemy(this);
+        }
+    }
     // Health script'i TakeDamage çağırdığında bu tetiklenir
     public void OnTakeDamage(int damage)
     {
@@ -79,9 +104,10 @@ public class Medic : MonoBehaviour, IDecoyable
         FireHealingBullet();
     }
 
-    void OnMedicDeath()
+    void OnMedicDeath_Internal()
     {
         Debug.Log($"Medic {gameObject.name} died!");
+        OnEnemyDeath?.Invoke(this);
     }
 
     void FireHealingBullet()
