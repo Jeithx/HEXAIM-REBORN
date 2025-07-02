@@ -1,7 +1,15 @@
 ﻿using UnityEngine;
 
-public class Hunter : MonoBehaviour, IDecoyable
+public class Hunter : MonoBehaviour, IDecoyable, IEnemy
+
 {
+
+    //DO THE SAME FOR THIS IENEMY TOO
+    public bool IsAlive => health != null && !health.IsDead;
+    public System.Action<IEnemy> OnEnemyDeath { get; set; }
+
+
+
 
 
     [Header("Hunter Settings")]
@@ -20,12 +28,11 @@ public class Hunter : MonoBehaviour, IDecoyable
 
     void Awake()
     {
-        int deadBit = 1 << LayerMask.NameToLayer("DeadCharacters");
-        int deadBit2 = 1 << LayerMask.NameToLayer("Hexes");
-        int deadBitSelf = 1 << LayerMask.NameToLayer("Hexes");
-        obstacleLayerMask &= ~deadBit;
-        obstacleLayerMask &= ~deadBit2;
-        obstacleLayerMask &= ~deadBitSelf;
+        int excludeBits = (1 << LayerMask.NameToLayer("DeadCharacters")) |
+                      (1 << LayerMask.NameToLayer("Hexes")) |
+                      (1 << LayerMask.NameToLayer("Hunter"));
+        obstacleLayerMask &= ~excludeBits;
+
 
         health = GetComponent<Health>();
 
@@ -44,20 +51,18 @@ public class Hunter : MonoBehaviour, IDecoyable
     public void OnDecoyEnd() { Debug.Log($"{gameObject.name} decoy ended"); }
     void Start()
     {
-        // Health event'lerini dinle
         if (health != null)
         {
-            health.OnDeath += OnHunterDeath;
+            health.OnDeath += OnHunterDeath_Internal;
+            health.OnRevive += OnHunterRevive;
         }
 
-        // Fire point yoksa oluştur
-        if (firePoint == null)
+        if (GameManager.Instance != null)
         {
-            GameObject firePointObj = new GameObject("HunterFirePoint");
-            firePointObj.transform.SetParent(transform);
-            firePointObj.transform.localPosition = Vector3.up * 0.3f;
-            firePoint = firePointObj.transform;
+            Debug.Log($"Registering enemy {gameObject.name}");
+            GameManager.Instance.RegisterEnemy(this);
         }
+
 
         // Seviye başında player'a dön
         LookAtPlayer();
@@ -68,13 +73,22 @@ public class Hunter : MonoBehaviour, IDecoyable
 
     void OnDestroy()
     {
+        // GameManager'dan çıkar
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UnregisterEnemy(this);
+        }
+
         if (health != null)
         {
-            health.OnDeath -= OnHunterDeath;
+            health.OnDeath -= OnHunterDeath_Internal;
+            health.OnRevive -= OnHunterRevive;
         }
 
         CancelInvoke();
     }
+
+
 
     void LookAtPlayer()
     {
@@ -168,10 +182,32 @@ public class Hunter : MonoBehaviour, IDecoyable
         }
     }
 
-    void OnHunterDeath()
+    void OnHunterDeath_Internal()
     {
         Debug.Log($"Hunter died!");
+        OnEnemyDeath?.Invoke(this);
         CancelInvoke(); // Görüş hattı kontrolünü durdur
+        hasFired = true; // Artık ateş edemez
+        hasLineOfSight = false; // Görüş hattını sıfırla
+
+    }
+
+    void OnHunterRevive()
+    {
+        // Hunter yeniden canlandığında
+        Debug.Log($"Hunter revived!");
+        hasFired = false; // Tekrar ateş edebilir
+        hasLineOfSight = false; // Görüş hattını sıfırla
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.RegisterEnemy(this);
+        }
+        LookAtPlayer();
+
+        CancelInvoke(nameof(CheckLineOfSight));
+
+        InvokeRepeating(nameof(CheckLineOfSight), 0f, sightCheckInterval);
+
     }
 
     // Manuel rotation (level design için)
