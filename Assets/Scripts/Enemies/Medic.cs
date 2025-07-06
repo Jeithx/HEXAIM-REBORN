@@ -65,7 +65,7 @@ public class Medic : MonoBehaviour, IDecoyable,IEnemy
         // GameManager'a kaydol
         if (GameManager.Instance != null)
         {
-            Debug.Log($"Registering enemy {gameObject.name}"); 
+            //Debug.Log($"Registering enemy {gameObject.name}"); 
             GameManager.Instance.RegisterEnemy(this);
         }
 
@@ -92,7 +92,7 @@ public class Medic : MonoBehaviour, IDecoyable,IEnemy
         Debug.Log($"{gameObject.name} revived!");
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.RegisterEnemy(this);
+            GameManager.Instance.OnEnemyRevived(this);
         }
     }
     // Health script'i TakeDamage çağırdığında bu tetiklenir

@@ -138,14 +138,16 @@ public class PlayerController : MonoBehaviour
             bulletRb.velocity = fireDirection * bulletSpeed;
         }
 
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.OnPlayerFired(); // ← BU VAR MI?
-        }
+     
 
         if (TurnManager.Instance != null)
         {
             TurnManager.Instance.StartTurn();
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnPlayerFired();
         }
 
 

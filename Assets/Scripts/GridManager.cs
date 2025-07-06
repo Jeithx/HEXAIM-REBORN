@@ -71,7 +71,7 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"Grid oluşturuldu: {hexGrid.Count} hex ({gridWidth}x{gridHeight})");
+        //Debug.Log($"Grid oluşturuldu: {hexGrid.Count} hex ({gridWidth}x{gridHeight})");
     }
 
     void CreateHexAt(int q, int r)

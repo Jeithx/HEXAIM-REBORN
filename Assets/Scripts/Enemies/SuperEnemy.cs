@@ -52,7 +52,7 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
 
         if (GameManager.Instance != null)
         {
-            Debug.Log($"Registering enemy {gameObject.name}");
+            //Debug.Log($"Registering enemy {gameObject.name}");
             GameManager.Instance.RegisterEnemy(this);
         }
         
@@ -108,7 +108,7 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
         Debug.Log($"{gameObject.name} revived!");
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.RegisterEnemy(this);
+            GameManager.Instance.OnEnemyRevived(this);
         }
     }
 

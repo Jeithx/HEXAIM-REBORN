@@ -14,9 +14,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int usedBullets = 0;
 
     [Header("Enemy Tracking")]
-    private List<IEnemy> enemies = new List<IEnemy>();
+    private HashSet<IEnemy> registeredEnemies = new HashSet<IEnemy>(); // All enemies ever registered
+    private HashSet<IEnemy> aliveEnemies = new HashSet<IEnemy>(); // Currently alive enemies
     private int totalEnemies = 0;
-    private int aliveEnemies = 0;
 
     public static GameManager Instance { get; private set; }
 
@@ -43,70 +43,108 @@ public class GameManager : MonoBehaviour
         StartCoroutine(DelayedStart());
     }
 
+    void Update()
+    {
+        // Debug key to force game state check
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            Debug.Log("Manual game state check triggered with G key");
+            ForceGameStateCheck();
+        }
+    }
+
     IEnumerator DelayedStart()
     {
-        // Diğer sistemlerin başlamasını bekle
+        // Wait for other systems to initialize
         yield return new WaitForSeconds(0.1f);
 
         OnBulletsChanged?.Invoke(availableBullets);
         OnTurnChanged?.Invoke(currentTurn);
 
-        Debug.Log($"Game started - Turn: {currentTurn}, Bullets: {availableBullets}, Enemies: {aliveEnemies}");
+        Debug.Log($"Game started - Turn: {currentTurn}, Bullets: {availableBullets}, Enemies: {aliveEnemies.Count}");
         CheckGameState();
     }
 
-    // Düşman kayıt sistemi
+    // Enemy registration system
     public void RegisterEnemy(IEnemy enemy)
     {
-        if (!enemies.Contains(enemy))
+        if (enemy == null) return;
+
+        // Check if this enemy was ever registered before
+        bool isNewEnemy = !registeredEnemies.Contains(enemy);
+
+        if (isNewEnemy)
         {
-            enemies.Add(enemy);
-            aliveEnemies++;
+            registeredEnemies.Add(enemy);
             totalEnemies++;
 
-            // Düşman ölüm event'ini dinle
+            // Subscribe to death event only once
             enemy.OnEnemyDeath += OnEnemyKilled;
-
-            Debug.Log($"Enemy registered. Total: {totalEnemies}, Alive: {aliveEnemies}");
+            //Debug.Log($"New enemy registered: {enemy}. Total enemies: {totalEnemies}");
         }
-        else
+
+        // Add to alive enemies if actually alive
+        if (enemy.IsAlive && !aliveEnemies.Contains(enemy))
         {
-            Debug.LogWarning($"⚠️ Enemy {enemy} already registered!"); // EKLE
+            aliveEnemies.Add(enemy);
+            Debug.Log($"Enemy added to alive list. Alive count: {aliveEnemies.Count}");
+        }
+        else if (!enemy.IsAlive && aliveEnemies.Contains(enemy))
+        {
+            // Safety check - remove from alive if somehow registered while dead
+            aliveEnemies.Remove(enemy);
+            Debug.LogWarning($"Dead enemy was in alive list - removed. Alive count: {aliveEnemies.Count}");
         }
     }
 
     public void UnregisterEnemy(IEnemy enemy)
     {
-        if (enemies.Contains(enemy))
+        if (enemy == null) return;
+
+        // Remove from alive enemies if present
+        if (aliveEnemies.Contains(enemy))
         {
-            enemies.Remove(enemy);
+            aliveEnemies.Remove(enemy);
+            Debug.Log($"Enemy removed from alive list. Remaining alive: {aliveEnemies.Count}");
+        }
 
-            // Eğer düşman hala yaşıyorsa alive count'u azalt
-            if (enemy.IsAlive)
-            {
-                aliveEnemies--;
-            }
+        // Remove from registered enemies
+        if (registeredEnemies.Contains(enemy))
+        {
+            registeredEnemies.Remove(enemy);
 
-            // Event listener'ı temizle
+            // Unsubscribe from events
             enemy.OnEnemyDeath -= OnEnemyKilled;
-
-            Debug.Log($"Enemy unregistered. Remaining alive: {aliveEnemies}");
+            Debug.Log($"Enemy unregistered completely: {enemy}");
         }
     }
 
-    // Düşman öldüğünde çağrılır
+    // Enemy died
     void OnEnemyKilled(IEnemy enemy)
     {
-        aliveEnemies--;
-        Debug.Log($"Enemy killed! Remaining alive: {aliveEnemies}");
+        if (enemy == null) return;
 
-        // Enemy listesinden çıkar (ölü olduğu için)
-        enemies.Remove(enemy);
-
-        // Turn sonunda kontrol edilecek
+        if (aliveEnemies.Contains(enemy))
+        {
+            aliveEnemies.Remove(enemy);
+            Debug.Log($"Enemy killed! Remaining: {aliveEnemies.Count}");
+        }
     }
 
-    // Player ateş ettiğinde çağrılacak
+    // Enemy revived (called by enemies when they revive)
+    public void OnEnemyRevived(IEnemy enemy)
+    {
+        if (enemy == null) return;
+
+        // Add back to alive enemies if not already there
+        if (enemy.IsAlive && !aliveEnemies.Contains(enemy))
+        {
+            aliveEnemies.Add(enemy);
+            Debug.Log($"Enemy revived and added to alive list! Alive count: {aliveEnemies.Count}");
+        }
+    }
+
+    // Player fired
     public void OnPlayerFired()
     {
         if (gameEnded) return;
@@ -117,7 +155,6 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"Bullets used: {usedBullets}/{availableBullets}");
 
-        // Turn bittiğinde kontrol et
         if (TurnManager.Instance != null)
         {
             StartCoroutine(CheckAfterTurn());
@@ -126,19 +163,20 @@ public class GameManager : MonoBehaviour
 
     IEnumerator CheckAfterTurn()
     {
-        // Turn bitene kadar bekle
+        // Turn bitene kadar bekle, hiçbir kontrol yapma
         while (TurnManager.Instance.IsTurnActive())
         {
             yield return new WaitForSeconds(0.1f);
         }
 
-        // Turn bitti, turn sayısını artır
+        // Turn bitti, şimdi turn sayısını artır
         currentTurn++;
         OnTurnChanged?.Invoke(currentTurn);
 
         Debug.Log($"=== TURN {currentTurn} ENDED ===");
+        ShowStats();
 
-        // Oyun durumunu kontrol et
+        // SADECE BURADA win/lose kontrolü yap
         CheckGameState();
     }
 
@@ -146,16 +184,16 @@ public class GameManager : MonoBehaviour
     {
         if (gameEnded) return;
 
-        Debug.Log($"Checking game state - Turn: {currentTurn}, Alive enemies: {aliveEnemies}");
+        Debug.Log($"Checking game state - Turn: {currentTurn}, Alive enemies: {aliveEnemies.Count}");
 
-        // Önce LOSE koşullarını kontrol et (kritik)
+        // Check LOSE conditions first (critical)
         if (CheckLoseCondition())
         {
             LoseLevel();
             return;
         }
 
-        // Sonra WIN koşulunu kontrol et
+        // Then check WIN condition
         if (CheckWinCondition())
         {
             WinLevel();
@@ -167,50 +205,72 @@ public class GameManager : MonoBehaviour
 
     bool CheckWinCondition()
     {
-        // 1. Tüm düşmanlar öldü mü?
-        if (aliveEnemies > 0)
+        Debug.Log($"=== CHECKING WIN CONDITION ===");
+
+        // 1. All enemies dead?
+        if (aliveEnemies.Count > 0)
         {
-            Debug.Log($"WIN CHECK: Still {aliveEnemies} enemies alive");
+            Debug.Log($"WIN CHECK: Still {aliveEnemies.Count} enemies alive - NOT WON");
             return false;
         }
+        else
+        {
+            Debug.Log("WIN CHECK: All enemies dead ✓");
+        }
 
-        // 2. Player yaşıyor mu?
+        // 2. Player alive?
         if (PlayerController.Instance != null)
         {
             Health playerHealth = PlayerController.Instance.GetComponent<Health>();
             if (playerHealth != null && playerHealth.IsDead)
             {
-                Debug.Log("WIN CHECK: Player is dead");
+                Debug.Log("WIN CHECK: Player is dead - NOT WON");
                 return false;
             }
-        }
-
-        // 3. Hostage'lar yaşıyor mu?
-        Hostage[] hostages = FindObjectsOfType<Hostage>();
-        foreach (Hostage hostage in hostages)
-        {
-            Health hostageHealth = hostage.GetComponent<Health>();
-            if (hostageHealth != null && hostageHealth.IsDead)
+            else
             {
-                Debug.Log($"WIN CHECK: Hostage {hostage.name} is dead");
-                return false;
+                Debug.Log("WIN CHECK: Player is alive ✓");
             }
         }
+        else
+        {
+            Debug.LogWarning("WIN CHECK: No player found!");
+        }
 
-        Debug.Log("WIN CONDITION MET: All enemies dead, player and hostages alive!");
+        // 3. Hostages alive?
+        Hostage[] hostages = FindObjectsOfType<Hostage>();
+        if (hostages.Length == 0)
+        {
+            Debug.Log("WIN CHECK: No hostages in level ✓");
+        }
+        else
+        {
+            foreach (Hostage hostage in hostages)
+            {
+                Health hostageHealth = hostage.GetComponent<Health>();
+                if (hostageHealth != null && hostageHealth.IsDead)
+                {
+                    Debug.Log($"WIN CHECK: Hostage {hostage.name} is dead - NOT WON");
+                    return false;
+                }
+            }
+            Debug.Log($"WIN CHECK: All {hostages.Length} hostages alive ✓");
+        }
+
+        Debug.Log("🎉 WIN CONDITION MET: All checks passed! 🎉");
         return true;
     }
 
     bool CheckLoseCondition()
     {
-        // 1. Mermi bitti mi?
-        if (usedBullets >= availableBullets)
+        // 1. No bullets left AND enemies still alive?
+        if (usedBullets >= availableBullets && aliveEnemies.Count > 0)
         {
-            Debug.Log("LOSE: No bullets left!");
+            Debug.Log("LOSE: No bullets left and enemies still alive!");
             return true;
         }
 
-        // 2. Player öldü mü?
+        // 2. Player dead?
         if (PlayerController.Instance != null)
         {
             Health playerHealth = PlayerController.Instance.GetComponent<Health>();
@@ -221,7 +281,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // 3. Hostage ölü mü ve canlandırılma süresi geçti mi?
+        // 3. Hostage dead too long?
         Hostage[] hostages = FindObjectsOfType<Hostage>();
         foreach (Hostage hostage in hostages)
         {
@@ -273,13 +333,16 @@ public class GameManager : MonoBehaviour
         Debug.Log("Press R to restart level...");
     }
 
-    // Getter'lar
+    // Bu metodu tamamen sil
+    // IEnumerator CheckForInstantWin() { ... }
+
+    // Getters
     public bool IsGameEnded => gameEnded;
     public bool IsLevelCompleted => levelCompleted;
     public int RemainingBullets => availableBullets - usedBullets;
     public int TotalBullets => availableBullets;
     public int CurrentTurn => currentTurn;
-    public int AliveEnemies => aliveEnemies;
+    public int AliveEnemies => aliveEnemies.Count;
 
     // Level settings
     public void SetAvailableBullets(int bullets)
@@ -289,20 +352,74 @@ public class GameManager : MonoBehaviour
         OnBulletsChanged?.Invoke(RemainingBullets);
     }
 
-    // Test metodları
+    // Test methods
     [ContextMenu("Force Win")]
     void ForceWin() { WinLevel(); }
 
     [ContextMenu("Force Lose")]
     void ForceLose() { LoseLevel(); }
 
+    [ContextMenu("Force Game State Check")]
+    public void ForceGameStateCheck()
+    {
+        Debug.Log("=== FORCED GAME STATE CHECK ===");
+        CheckGameState();
+    }
+
     [ContextMenu("Show Stats")]
-    void ShowStats()
+    public void ShowStats()
     {
         Debug.Log($"=== GAME STATS ===");
         Debug.Log($"Turn: {currentTurn}");
         Debug.Log($"Bullets: {usedBullets}/{availableBullets}");
-        Debug.Log($"Enemies: {aliveEnemies} alive / {totalEnemies} total");
+        Debug.Log($"Alive enemies: {aliveEnemies.Count}");
+        Debug.Log($"Registered enemies: {registeredEnemies.Count}");
+        Debug.Log($"Total enemies ever: {totalEnemies}");
         Debug.Log($"Game ended: {gameEnded}");
+
+        // List alive enemies
+        if (aliveEnemies.Count > 0)
+        {
+            Debug.Log("Alive enemies list:");
+            foreach (var enemy in aliveEnemies)
+            {
+                Debug.Log($"  - {enemy} (IsAlive: {enemy.IsAlive})");
+            }
+        }
+    }
+
+    [ContextMenu("Validate Enemy Counts")]
+    void ValidateEnemyCounts()
+    {
+        // Count actual alive enemies in scene
+        int actualAliveCount = 0;
+        foreach (var enemy in registeredEnemies)
+        {
+            if (enemy != null && enemy.IsAlive)
+            {
+                actualAliveCount++;
+            }
+        }
+
+        Debug.Log($"=== VALIDATION ===");
+        Debug.Log($"Tracked alive enemies: {aliveEnemies.Count}");
+        Debug.Log($"Actual alive enemies: {actualAliveCount}");
+
+        if (aliveEnemies.Count != actualAliveCount)
+        {
+            Debug.LogError("MISMATCH DETECTED! Fixing...");
+
+            // Rebuild alive enemies set
+            aliveEnemies.Clear();
+            foreach (var enemy in registeredEnemies)
+            {
+                if (enemy != null && enemy.IsAlive)
+                {
+                    aliveEnemies.Add(enemy);
+                }
+            }
+
+            Debug.Log($"Fixed. New alive count: {aliveEnemies.Count}");
+        }
     }
 }

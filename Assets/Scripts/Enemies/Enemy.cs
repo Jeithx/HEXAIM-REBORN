@@ -24,23 +24,23 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
     public void OnDecoyEnd() { Debug.Log($"{gameObject.name} decoy ended"); }
 
     [Header("Enemy Settings")]
-    [SerializeField] private GameObject enemyBulletPrefab;
+    [SerializeField] protected GameObject enemyBulletPrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private float bulletSpeed = 5f;
+    [SerializeField] protected float bulletSpeed = 5f;
 
     [Header("Visual Settings")]
-    [SerializeField] private Color enemyColor = Color.red;
+    //[SerializeField] private Color enemyColor = Color.red;
 
     private Health health;
 
-    void Start()
+    protected void Start()
     {
         UpdateSprite();
 
         // GameManager'a kaydol
         if (GameManager.Instance != null)
         {
-            Debug.Log($"Registering enemy {gameObject.name}");
+            //Debug.Log($"Registering enemy {gameObject.name}");
             GameManager.Instance.RegisterEnemy(this);
         }
 
@@ -84,7 +84,7 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
         // GameManager'a tekrar kaydol
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.RegisterEnemy(this);
+            GameManager.Instance.OnEnemyRevived(this);
         }
     }
 
@@ -122,7 +122,7 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
         FireBullet();
     }
 
-    void FireBullet()
+    protected virtual void FireBullet()
     {
         if (enemyBulletPrefab == null || firePoint == null) return;
 

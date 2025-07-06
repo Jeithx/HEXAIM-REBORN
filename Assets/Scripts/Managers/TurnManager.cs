@@ -46,21 +46,36 @@ public class TurnManager : MonoBehaviour
 
     IEnumerator WaitForBulletsToStop()
     {
-        // Sahnedeki tüm mermiler durana kadar bekle
+        float waitTime = 0f;
+
         while (AreBulletsActive())
         {
-            yield return new WaitForSeconds(0.1f); // 0.1 saniye bekle, tekrar kontrol et
+            waitTime += 0.1f;
+            yield return new WaitForSeconds(0.1f);
+
+            // Her saniyede bir debug log at
+            if (waitTime % 1f < 0.1f)
+            {
+                Debug.Log($"Waiting for bullets... Time: {waitTime:F1}s");
+            }
         }
 
-        // Tüm mermiler durdu
+        Debug.Log($"All bullets stopped after {waitTime:F1} seconds");
         EndTurn();
     }
 
     bool AreBulletsActive()
     {
-        // Sahnedeki tüm BaseBullet türevlerini say
+        // Tüm BaseBullet türevlerini bul
         BaseBullet[] bullets = FindObjectsOfType<BaseBullet>();
-        return bullets.Length > 0;
+
+        if (bullets.Length > 0)
+        {
+            //Debug.Log($"Active bullets: {bullets.Length}");
+            return true;
+        }
+
+        return false;
     }
 
     void EndTurn()

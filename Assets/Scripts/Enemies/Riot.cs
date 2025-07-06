@@ -48,13 +48,13 @@ public class Riot : MonoBehaviour,  IDecoyable, IEnemy
         if (health != null)
         {
             health.OnDeath += OnRiotDeath_Internal;
-            health.OnRevive += OnEnemyRevive; // EKLENEN!
+            health.OnRevive += OnEnemyRevive;
         }
 
         // GameManager'a kaydol
         if (GameManager.Instance != null)
         {
-            Debug.Log($"Registering enemy {gameObject.name}");
+            //Debug.Log($"Registering enemy {gameObject.name}");
             GameManager.Instance.RegisterEnemy(this);
         }
     }
@@ -74,7 +74,7 @@ public class Riot : MonoBehaviour,  IDecoyable, IEnemy
         Debug.Log($"{gameObject.name} revived!");
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.RegisterEnemy(this);
+            GameManager.Instance.OnEnemyRevived(this);
         }
     }
     void OnRiotDeath_Internal()

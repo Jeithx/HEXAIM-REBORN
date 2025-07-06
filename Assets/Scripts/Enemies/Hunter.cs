@@ -59,7 +59,7 @@ public class Hunter : MonoBehaviour, IDecoyable, IEnemy
 
         if (GameManager.Instance != null)
         {
-            Debug.Log($"Registering enemy {gameObject.name}");
+            //Debug.Log($"Registering enemy {gameObject.name}");
             GameManager.Instance.RegisterEnemy(this);
         }
 

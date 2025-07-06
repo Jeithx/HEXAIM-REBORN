@@ -73,12 +73,13 @@ public class BaseBullet : MonoBehaviour
         IRobot robot = hitObject.GetComponent<IRobot>();
         if (robot != null)
         {
-            // Robot'a mermi çarptı
-            robot.OnBulletHit(this);
+
 
             // Bazooka değilse mermi yok olur
             if (!robot.CanTakeDamageFrom(this))
             {
+                // Robot'a mermi çarptı
+                robot.OnBulletHit(this);
                 DestroyBullet();
                 return;
             }
