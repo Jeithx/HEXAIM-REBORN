@@ -169,6 +169,9 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
+        // Extra güvenlik - Bumper chain reaction'ı tamamen bitsin
+        yield return new WaitForSeconds(0.2f);
+
         // Turn bitti, şimdi turn sayısını artır
         currentTurn++;
         OnTurnChanged?.Invoke(currentTurn);
@@ -370,11 +373,11 @@ public class GameManager : MonoBehaviour
     public void ShowStats()
     {
         Debug.Log($"=== GAME STATS ===");
-        Debug.Log($"Turn: {currentTurn}");
-        Debug.Log($"Bullets: {usedBullets}/{availableBullets}");
-        Debug.Log($"Alive enemies: {aliveEnemies.Count}");
-        Debug.Log($"Registered enemies: {registeredEnemies.Count}");
-        Debug.Log($"Total enemies ever: {totalEnemies}");
+        //Debug.Log($"Turn: {currentTurn}");
+        //Debug.Log($"Bullets: {usedBullets}/{availableBullets}");
+        //Debug.Log($"Alive enemies: {aliveEnemies.Count}");
+        //Debug.Log($"Registered enemies: {registeredEnemies.Count}");
+        //Debug.Log($"Total enemies ever: {totalEnemies}");
         Debug.Log($"Game ended: {gameEnded}");
 
         // List alive enemies

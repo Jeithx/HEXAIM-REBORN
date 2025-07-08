@@ -50,7 +50,7 @@ public class Health : MonoBehaviour
         currentHp = Mathf.Max(currentHp, 0); // HP negatif olamaz
 
         OnHealthChanged?.Invoke(currentHp);
-        Debug.Log($"{gameObject.name} took {damage} damage. HP: {currentHp}/{maxHp}");
+        //Debug.Log($"{gameObject.name} took {damage} damage. HP: {currentHp}/{maxHp}");
         OnTakeDamage?.Invoke(damage); // Event'i tetikle
 
         if (currentHp <= 0)
@@ -88,7 +88,7 @@ public class Health : MonoBehaviour
         isDead = true;
         currentHp = 0;
         OnDeath?.Invoke();
-        Debug.Log($"{gameObject.name} died!");
+        //Debug.Log($"{gameObject.name} died!");
 
         // Sprite'ı soluklaştır (yok etme)
         if (spriteRenderer != null)
@@ -99,7 +99,7 @@ public class Health : MonoBehaviour
         }
 
         gameObject.layer = LayerMask.NameToLayer("DeadCharacters");
-        Debug.Log($"{gameObject.name} moved to DeadCharacters layer");
+        //Debug.Log($"{gameObject.name} moved to DeadCharacters layer");
     }
 
     public void Revive()

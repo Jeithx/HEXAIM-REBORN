@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
         }
 
 
-        Debug.Log("Player fired towards mouse!");
+        //Debug.Log("Player fired towards mouse!");
     }
 
     // TurnManager tarafından çağrılacak

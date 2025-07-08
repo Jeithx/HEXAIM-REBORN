@@ -5,6 +5,7 @@ public class TurnManager : MonoBehaviour
 {
     [Header("Turn Settings")]
     [SerializeField] private bool isTurnActive = false;
+    [SerializeField] private bool processingBumpers = false;
 
     public static TurnManager Instance { get; private set; }
 
@@ -46,36 +47,77 @@ public class TurnManager : MonoBehaviour
 
     IEnumerator WaitForBulletsToStop()
     {
-        float waitTime = 0f;
-
+        // Sahnedeki tüm mermiler durana kadar bekle
         while (AreBulletsActive())
         {
-            waitTime += 0.1f;
             yield return new WaitForSeconds(0.1f);
-
-            // Her saniyede bir debug log at
-            if (waitTime % 1f < 0.1f)
-            {
-                Debug.Log($"Waiting for bullets... Time: {waitTime:F1}s");
-            }
         }
 
-        Debug.Log($"All bullets stopped after {waitTime:F1} seconds");
+        // Mermiler durdu, şimdi Bumper'ları kontrol et
+        yield return StartCoroutine(ProcessBumperShots());
+
+        // Her şey bitti
         EndTurn();
+    }
+
+    IEnumerator ProcessBumperShots()
+    {
+        processingBumpers = true;
+        Debug.Log("=== Processing Bumper shots ===");
+
+        // Infinite loop protection
+        int maxIterations = 20;
+        int iteration = 0;
+
+        while (iteration < maxIterations)
+        {
+            iteration++;
+
+            // Ateş edecek Bumper'ları bul
+            Bumper[] allBumpers = FindObjectsOfType<Bumper>();
+            bool anyBumperFired = false;
+
+            foreach (Bumper bumper in allBumpers)
+            {
+                if (bumper.HasPendingShot())
+                {
+                    bumper.ExecutePendingShot();
+                    anyBumperFired = true;
+                }
+            }
+
+            // Hiçbir Bumper ateş etmediyse döngüden çık
+            if (!anyBumperFired)
+            {
+                Debug.Log("No more Bumpers to fire - chain reaction ended");
+                break;
+            }
+
+            Debug.Log($"Bumper iteration {iteration} - waiting for new bullets to stop");
+
+            // Yeni ateş edilen mermiler durana kadar bekle
+            while (AreBulletsActive())
+            {
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            Debug.Log($"Bumper iteration {iteration} completed");
+        }
+
+        if (iteration >= maxIterations)
+        {
+            Debug.LogWarning("Bumper chain reaction hit max iterations - forcing end");
+        }
+
+        processingBumpers = false;
+        Debug.Log("=== Bumper processing completed ===");
     }
 
     bool AreBulletsActive()
     {
-        // Tüm BaseBullet türevlerini bul
+        // Sahnedeki tüm BaseBullet türevlerini say
         BaseBullet[] bullets = FindObjectsOfType<BaseBullet>();
-
-        if (bullets.Length > 0)
-        {
-            //Debug.Log($"Active bullets: {bullets.Length}");
-            return true;
-        }
-
-        return false;
+        return bullets.Length > 0;
     }
 
     void EndTurn()
@@ -88,10 +130,25 @@ public class TurnManager : MonoBehaviour
         {
             PlayerController.Instance.EnableFiring();
         }
+
+        // GameManager'a turn bittiğini bildir
+        if (GameManager.Instance != null)
+        {
+            StartCoroutine(NotifyGameManagerAfterDelay());
+        }
+    }
+
+    IEnumerator NotifyGameManagerAfterDelay()
+    {
+        // Kısa bir bekleme - diğer sistemlerin settle olması için
+        yield return new WaitForSeconds(0.1f);
+
+        // Şimdi GameManager turn bitti diye kontrol edebilir
+        Debug.Log("Notifying GameManager - turn truly ended");
     }
 
     public bool IsTurnActive()
     {
-        return isTurnActive;
+        return isTurnActive || processingBumpers;
     }
 }

@@ -51,8 +51,8 @@ public class HexTile : MonoBehaviour
         // Sol tık - normal hex bilgisi
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log($"Hex Coordinates: ({hexData.q}, {hexData.r})");
-            Debug.Log($"Left clicked hex: {hexData} at world position: {hexData.worldPosition}");
+            //Debug.Log($"Hex Coordinates: ({hexData.q}, {hexData.r})");
+            //Debug.Log($"Left clicked hex: {hexData} at world position: {hexData.worldPosition}");
         }
     }
 

@@ -144,6 +144,6 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
             bulletRb.velocity = fireDirection * bulletSpeed;
         }
 
-        Debug.Log($"Enemy {gameObject.name} fired a bullet!");
+        //Debug.Log($"Enemy {gameObject.name} fired a bullet!");
     }
 }

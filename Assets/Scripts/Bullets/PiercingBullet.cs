@@ -4,18 +4,7 @@ using System.Collections.Generic;
 
 public class PiercingBullet : BaseBullet
 {
-    [Header("Piercing Bullet Settings")]
-    [SerializeField] private Color bulletColor = Color.yellow;
 
-    void Start()
-    {
-        // Piercing mermi görsel ayarları
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.color = bulletColor;
-        }
-    }
 
     protected override void DefaultCollisionBehavior(GameObject hitObject)
     {
@@ -26,12 +15,19 @@ public class PiercingBullet : BaseBullet
             return;
         }
 
+        IRobot robot = hitObject.GetComponent<IRobot>();
+        if (robot != null)
+        {
+            robot.OnBulletHit(this);
+            return;
+        }
+
         // Karaktere çarparsa hasar ver AMA YOK OLMA!
         Health health = hitObject.GetComponent<Health>();
         if (health != null)
         {
             health.TakeDamage(damage);
-            Debug.Log($"PiercingBullet: Hit {hitObject.name} but continuing through!");
+            //Debug.Log($"PiercingBullet: Hit {hitObject.name} but continuing through!");
 
             // Mermi yok olmaz, yoluna devam eder!
             // DestroyBullet() çağrılmaz

@@ -7,27 +7,14 @@ public class Bumper : BaseRobot
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
 
-    [Header("Visual Settings")]
-    [SerializeField] private Color bumperColor = Color.black;
+    [Header("Turn-Based Firing")]
+    [SerializeField] private bool shouldFireAtEndOfTurn = false;
 
-    void Start()
-    {
-        // Fire point yoksa oluştur
-        if (firePoint == null)
-        {
-            GameObject firePointObj = new GameObject("BumperFirePoint");
-            firePointObj.transform.SetParent(transform);
-            firePointObj.transform.localPosition = Vector3.up * 0.3f;
-            firePoint = firePointObj.transform;
-        }
-    }
-
-    // Robot'a mermi çarptığında
     public override void OnBulletHit(BaseBullet bullet)
     {
         if (isDestroyed) return;
 
-        Debug.Log($"Bumper hit by {bullet.GetType().Name}");
+        //Debug.Log($"Bumper hit by {bullet.GetType().Name}");
 
         // Bazooka mermisi ise yok et
         if (bullet.name is "BazookaBullet")
@@ -36,8 +23,24 @@ public class Bumper : BaseRobot
             return;
         }
 
-        // Normal mermi ise ateş et
-        FireBumperBullet();
+        shouldFireAtEndOfTurn = true;
+
+    }
+
+    // TurnManager tarafından çağrılacak
+    public bool HasPendingShot()
+    {
+        return shouldFireAtEndOfTurn && !isDestroyed;
+    }
+
+    public void ExecutePendingShot()
+    {
+        if (shouldFireAtEndOfTurn && !isDestroyed)
+        {
+            Debug.Log($"Bumper {gameObject.name} executing pending shot!");
+            FireBumperBullet();
+            shouldFireAtEndOfTurn = false;
+        }
     }
 
     void FireBumperBullet()

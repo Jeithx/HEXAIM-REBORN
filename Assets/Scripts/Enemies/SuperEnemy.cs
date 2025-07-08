@@ -114,7 +114,7 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
 
     void OnSuperEnemyDeath_Internal()
     {
-        Debug.Log($"SuperEnemy {gameObject.name} died!");
+        //Debug.Log($"SuperEnemy {gameObject.name} died!");
         OnEnemyDeath?.Invoke(this);
 
     }
@@ -141,7 +141,7 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
             bulletRb.velocity = fireDirection * bulletSpeed;
         }
 
-        Debug.Log($"SuperEnemy {gameObject.name} fired a piercing bullet!");
+        //Debug.Log($"SuperEnemy {gameObject.name} fired a piercing bullet!");
     }
 
 }
