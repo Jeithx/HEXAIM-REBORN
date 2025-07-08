@@ -7,7 +7,27 @@ public class Robot : BaseRobot
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
 
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] private GameObject headphoneObject;
 
+
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
+    {
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
+    }
+    void OnValidate()
+    {
+        UpdateHeadphonesVisibility();
+    }
+    private void Start()
+    {
+        UpdateHeadphonesVisibility();
+
+    }
 
     // Robot'a mermi çarptığında
     public override void OnBulletHit(BaseBullet bullet)

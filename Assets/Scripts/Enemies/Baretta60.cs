@@ -4,7 +4,8 @@ public class Baretta60 : Enemy
 {
     [Header("Baretta60 Settings")]
 
-    [SerializeField] private Sprite barettaHeadphoneSprite; // 2 namlulu + headphone sprite
+    //[Header("Karakter’e takılacak Kulaklık Objesi")]
+    //[SerializeField] private GameObject headphoneObject;
     [SerializeField] private Transform firePoint1; // İlk namlu için
     [SerializeField] private Transform firePoint2; // İkinci namlu için
 
@@ -14,31 +15,23 @@ public class Baretta60 : Enemy
         base.Start();
 
 
-        // Baretta sprite'ını ayarla
-        UpdateBarettaSprite();
+        UpdateBarettaHeadphonesVisibility();
     }
 
     void OnValidate()
     {
-        if (Application.isPlaying)
-        {
-            UpdateBarettaSprite();
-        }
+        UpdateBarettaHeadphonesVisibility();
     }
 
-    void UpdateBarettaSprite()
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateBarettaHeadphonesVisibility()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            // Headphone durumuna göre sprite seç
-            if (hasHeadphones && barettaHeadphoneSprite != null)
-            {
-                spriteRenderer.sprite = barettaHeadphoneSprite;
-            }
-
-        }
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
     }
+
 
     // Enemy'nin FireBullet metodunu override et
     protected override void FireBullet()

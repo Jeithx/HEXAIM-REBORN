@@ -3,14 +3,8 @@
 public class Hunter : MonoBehaviour, IDecoyable, IEnemy
 
 {
-
-    //DO THE SAME FOR THIS IENEMY TOO
     public bool IsAlive => health != null && !health.IsDead;
     public System.Action<IEnemy> OnEnemyDeath { get; set; }
-
-
-
-
 
     [Header("Hunter Settings")]
     [SerializeField] private GameObject hunterBulletPrefab;

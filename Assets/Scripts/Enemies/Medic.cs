@@ -2,13 +2,13 @@
 
 public class Medic : MonoBehaviour, IDecoyable,IEnemy
 {
-    //DO THE SAME THINGS FOR THIS IENEMY TOO
     public bool IsAlive => health != null && !health.IsDead;
     public System.Action<IEnemy> OnEnemyDeath { get; set; }
 
     [Header("Decoy Settings")]
-    [SerializeField] private bool hasHeadphones = true; // Medic kulaklık kullanıyor
-    [SerializeField] private Sprite headphoneSprite; // Kulaklıklı sprite
+    [SerializeField] private bool hasHeadphones = true;
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] private GameObject headphoneObject;
     public bool CanBeDecoyed => hasHeadphones && !health.IsDead; // Decoy olabilmesi için hasHeadphones ve IsDead kontrolü
 
     public void OnDecoyStart() { Debug.Log($"{gameObject.name} decoy started"); }
@@ -18,9 +18,6 @@ public class Medic : MonoBehaviour, IDecoyable,IEnemy
     [SerializeField] private GameObject medicBulletPrefab; // MedicBullet prefab'ı
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
-
-    [Header("Visual Settings")]
-    [SerializeField] private Color medicColor = Color.green;
 
     private Health health;
 
@@ -34,27 +31,22 @@ public class Medic : MonoBehaviour, IDecoyable,IEnemy
             health = gameObject.AddComponent<Health>();
         }
     }
-    void UpdateSprite()
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            if (hasHeadphones && headphoneSprite != null)
-            {
-                spriteRenderer.sprite = headphoneSprite;
-            }
-        }
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
     }
     void OnValidate()
     {
-        if (Application.isPlaying)
-        {
-            UpdateSprite();
-        }
+        UpdateHeadphonesVisibility();
     }
     void Start()
     {
-        UpdateSprite();
+        UpdateHeadphonesVisibility();
+
         // Health event'lerini dinle
         if (health != null)
         {

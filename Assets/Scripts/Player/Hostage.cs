@@ -2,13 +2,30 @@
 
 public class Hostage : MonoBehaviour
 {
-    [Header("Hostage Settings")]
-    [SerializeField] private Color hostageColor = Color.cyan;
+    [Header("Decoy Settings")]
+    [SerializeField] private bool hasHeadphones = true;
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] private GameObject headphoneObject;
 
     [Header("Death Tracking")]
     [SerializeField] private int deathTurn = -1; // Hangi turda öldü (-1 = hiç ölmedi)
 
     private Health health;
+
+
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
+    {
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
+    }
+
+    void OnValidate()
+    {
+        UpdateHeadphonesVisibility();
+    }
 
     void Awake()
     {
@@ -21,12 +38,7 @@ public class Hostage : MonoBehaviour
 
     void Start()
     {
-        // Hostage görsel ayarları
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.color = hostageColor;
-        }
+        UpdateHeadphonesVisibility();
 
         // Health event'lerini dinle
         if (health != null)

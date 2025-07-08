@@ -8,8 +8,9 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
 
     [Header("Decoy Settings")]
     [SerializeField] private bool hasHeadphones = true;
-    [SerializeField] private Sprite headphoneSprite; // Kulaklıklı sprite
-    public bool CanBeDecoyed => hasHeadphones && !health.IsDead;
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] private GameObject headphoneObject; public bool CanBeDecoyed => hasHeadphones && !health.IsDead;
+
     [Header("SuperEnemy Settings")]
     [SerializeField] private GameObject piercingBulletPrefab; // PiercingBullet prefab'ı
     [SerializeField] private Transform firePoint;
@@ -41,7 +42,7 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
 
     void Start()
     {
-        UpdateSprite();
+        UpdateHeadphonesVisibility();
         // Health event'lerini dinle
         if (health != null)
         {
@@ -60,24 +61,18 @@ public class SuperEnemy : MonoBehaviour, IDecoyable, IEnemy
 
     }
 
-    void UpdateSprite()
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            if (hasHeadphones && headphoneSprite != null)
-            {
-                spriteRenderer.sprite = headphoneSprite;
-            }
-        }
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
     }
 
     void OnValidate()
     {
-        if (Application.isPlaying)
-        {
-            UpdateSprite();
-        }
+        UpdateHeadphonesVisibility();
     }
 
     void OnDestroy()

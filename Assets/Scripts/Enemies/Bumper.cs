@@ -10,6 +10,28 @@ public class Bumper : BaseRobot
     [Header("Turn-Based Firing")]
     [SerializeField] private bool shouldFireAtEndOfTurn = false;
 
+
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] private GameObject headphoneObject;
+
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
+    {
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
+    }
+    void OnValidate()
+    {
+        UpdateHeadphonesVisibility();
+    }
+    private void Start()
+    {
+        UpdateHeadphonesVisibility();
+
+    }
+
     public override void OnBulletHit(BaseBullet bullet)
     {
         if (isDestroyed) return;

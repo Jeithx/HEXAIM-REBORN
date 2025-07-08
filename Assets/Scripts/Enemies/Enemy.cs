@@ -8,7 +8,8 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
 
     [Header("Decoy Settings")]
     [SerializeField] public bool hasHeadphones = true;
-    [SerializeField] private Sprite headphoneSprite;
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] protected GameObject headphoneObject;
 
     public bool CanBeDecoyed
     {
@@ -35,7 +36,7 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
 
     protected void Start()
     {
-        UpdateSprite();
+        UpdateHeadphonesVisibility();
 
         // GameManager'a kaydol
         if (GameManager.Instance != null)
@@ -96,23 +97,18 @@ public class Enemy : MonoBehaviour, IDecoyable, IEnemy
 
     void OnValidate()
     {
-        if (Application.isPlaying)
-        {
-            UpdateSprite();
-        }
+        UpdateHeadphonesVisibility();
     }
 
-    void UpdateSprite()
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            if (hasHeadphones && headphoneSprite != null)
-            {
-                spriteRenderer.sprite = headphoneSprite;
-            }
-        }
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
     }
+
 
     public void OnTakeDamage(int damage)
     {

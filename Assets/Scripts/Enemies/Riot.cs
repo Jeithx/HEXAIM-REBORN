@@ -11,8 +11,10 @@ public class Riot : MonoBehaviour,  IDecoyable, IEnemy
     public System.Action<IEnemy> OnEnemyDeath { get; set; }
 
     [Header("Decoy Settings")]
-    [SerializeField] private bool hasHeadphones = true; // Riot kulaklık kullanıyor
-    [SerializeField] private Sprite headphoneSprite; // Kulaklıklı sprite
+    [SerializeField] private bool hasHeadphones = true;
+    [Header("Karakter’e takılacak Kulaklık Objesi")]
+    [SerializeField] private GameObject headphoneObject;
+
     public bool CanBeDecoyed => hasHeadphones && !health.IsDead; // Decoy olabilmesi için hasHeadphones ve IsDead kontrolü
     public void OnDecoyStart() { Debug.Log($"{gameObject.name} decoy started"); }
     public void OnDecoyEnd() { Debug.Log($"{gameObject.name} decoy ended"); }
@@ -21,28 +23,22 @@ public class Riot : MonoBehaviour,  IDecoyable, IEnemy
 
     void OnValidate()
     {
-        if (Application.isPlaying)
-        {
-            UpdateSprite();
-        }
+        UpdateHeadphonesVisibility();
     }
-    void UpdateSprite()
+
+    /// <summary>
+    /// Kulaklık objesini hasHeadphones’a göre açar/kapatır.
+    /// </summary>
+    private void UpdateHeadphonesVisibility()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            if (hasHeadphones && headphoneSprite != null)
-            {
-                spriteRenderer.sprite = headphoneSprite;
-            }
-        }
+        if (headphoneObject == null) return;
+        headphoneObject.SetActive(!hasHeadphones);
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
-        UpdateSprite();
+        UpdateHeadphonesVisibility();
 
         // Health event'lerini dinle
         if (health != null)
