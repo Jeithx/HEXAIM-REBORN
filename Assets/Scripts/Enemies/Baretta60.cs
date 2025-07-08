@@ -42,36 +42,39 @@ public class Baretta60 : Enemy
         FireBulletFromPoint(firePoint1, 0f);
 
         // İkinci mermi: Sağ namludan, baktığı yön + 60°
-        FireBulletFromPoint(firePoint2, 60f);
+        FireBulletFromPoint(firePoint2, -60f);
 
         //Debug.Log($"Baretta60 {gameObject.name} fired 2 bullets from 2 barrels! (0° + 60°)");
     }
 
     void FireBulletFromPoint(Transform shootPoint, float angleOffset)
     {
-        // Mermi oluştur (belirtilen fire point'ten)
-        GameObject bullet = Instantiate(enemyBulletPrefab, shootPoint.position, transform.rotation);
-        // Owner ayarla
+        // 1. Yönü Hesapla (Yeni ve Güvenilir Yöntem)
+        // Karakterin "ileri" yönünü al (Sprite'ınızın üst kısmı ileri bakıyorsa transform.up doğrudur).
+        Vector2 baseDirection = transform.up;
+
+        // Belirtilen açı kadar bir dönüş (rotasyon) oluştur.
+        Quaternion rotation = Quaternion.Euler(0, 0, angleOffset);
+
+        // Temel yönü oluşturduğun rotasyon ile döndürerek nihai yönü bul.
+        Vector2 finalDirection = rotation * baseDirection;
+
+        // 2. Mermiyi Oluştur
+        // Merminin başlangıç rotasyonu önemsiz çünkü hızını doğrudan biz ayarlayacağız.
+        GameObject bullet = Instantiate(enemyBulletPrefab, shootPoint.position, Quaternion.identity);
+
         EnemyBullet enemyBullet = bullet.GetComponent<EnemyBullet>();
         if (enemyBullet != null)
         {
             enemyBullet.SetOwner(gameObject);
         }
 
-        // Yön hesapla: Transform'un rotation'ı + offset
-        float currentAngle = transform.eulerAngles.z;
-        float targetAngle = currentAngle + angleOffset;
-
-        Vector2 fireDirection = new Vector2(
-            Mathf.Sin(targetAngle * Mathf.Deg2Rad),
-            Mathf.Cos(targetAngle * Mathf.Deg2Rad)
-        );
-
-        // Mermi hızını ayarla
+        // 3. Mermiye Hız Ver
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
         if (bulletRb != null)
         {
-            bulletRb.velocity = fireDirection * bulletSpeed;
+            // Hesaplanan yönde mermiyi fırlat.
+            bulletRb.velocity = finalDirection.normalized * bulletSpeed;
         }
     }
 }

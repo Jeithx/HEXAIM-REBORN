@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int currentTurn = 0;
 
     [Header("Level Settings")]
-    [SerializeField] private int availableBullets = 10;
+    [SerializeField] private int availableBullets = 3;
     [SerializeField] private int usedBullets = 0;
 
     [Header("Enemy Tracking")]
@@ -25,6 +27,11 @@ public class GameManager : MonoBehaviour
     public System.Action OnLevelLost;
     public System.Action<int> OnBulletsChanged;
     public System.Action<int> OnTurnChanged;
+
+
+    [Header("Debug Placeholders")]
+    [SerializeField] private TMP_Text wonText; // Optional debug text for UI
+    [SerializeField] private TMP_Text LostText; // Optional debug text for UI
 
     void Awake()
     {
@@ -261,6 +268,7 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("🎉 WIN CONDITION MET: All checks passed! 🎉");
+        
         return true;
     }
 
@@ -306,6 +314,7 @@ public class GameManager : MonoBehaviour
         levelCompleted = true;
 
         Debug.Log("🎉 LEVEL WON! 🎉");
+        wonText.gameObject.SetActive(true);
         OnLevelWon?.Invoke();
 
         StartCoroutine(ShowWinMessage());
@@ -319,6 +328,7 @@ public class GameManager : MonoBehaviour
         levelCompleted = false;
 
         Debug.Log("💀 LEVEL LOST! 💀");
+        LostText.gameObject.SetActive(true);
         OnLevelLost?.Invoke();
 
         StartCoroutine(ShowLoseMessage());

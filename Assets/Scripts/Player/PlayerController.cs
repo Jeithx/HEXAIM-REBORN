@@ -34,29 +34,6 @@ public class PlayerController : MonoBehaviour
         playerCamera = Camera.main;
     }
 
-    void Start()
-    {
-        // Player'ı grid ortasına yerleştir
-        if (GridManager.Instance != null)
-        {
-            GridManager.Instance.PlaceObjectOnHex(gameObject, 0, 0);
-        }
-
-        // Fire point yoksa oluştur (UP yönünde)
-        if (firePoint == null)
-        {
-            GameObject firePointObj = new GameObject("FirePoint");
-            firePointObj.transform.SetParent(transform);
-            firePointObj.transform.localPosition = Vector3.up * playerSize;
-            firePoint = firePointObj.transform;
-        }
-
-        // Bullet prefab yoksa oluştur
-        if (bulletPrefab == null)
-        {
-            CreateBulletPrefab();
-        }
-    }
 
     void Update()
     {

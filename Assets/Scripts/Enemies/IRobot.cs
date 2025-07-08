@@ -8,7 +8,7 @@ public interface IRobot
     void DestroyRobot();
 }
 
-// Robot base class - daha basit, Health yok
+
 public abstract class BaseRobot : MonoBehaviour, IRobot, IDecoyable
 {
     [Header("Robot Settings")]

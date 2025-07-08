@@ -48,8 +48,9 @@ public class Baretta180 : Enemy
 
     void FireBulletFromPoint(Transform shootPoint, float angleOffset)
     {
-        // Mermi oluştur (belirtilen fire point'ten)
-        GameObject bullet = Instantiate(enemyBulletPrefab, shootPoint.position, transform.rotation);
+        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, transform.eulerAngles.z + angleOffset);
+        GameObject bullet = Instantiate(enemyBulletPrefab, shootPoint.position, bulletRotation);
+
         // Owner ayarla
         EnemyBullet enemyBullet = bullet.GetComponent<EnemyBullet>();
         if (enemyBullet != null)
@@ -57,14 +58,19 @@ public class Baretta180 : Enemy
             enemyBullet.SetOwner(gameObject);
         }
 
-        // Yön hesapla: Transform'un rotation'ı + offset
+        // Yön hesapla - 90 derece offset ekleyerek düzelt
         float currentAngle = transform.eulerAngles.z;
-        float targetAngle = currentAngle + angleOffset;
+        float targetAngle = (currentAngle + 90f) + angleOffset; // 90° offset eklendi
 
         Vector2 fireDirection = new Vector2(
-            Mathf.Sin(targetAngle * Mathf.Deg2Rad),
-            Mathf.Cos(targetAngle * Mathf.Deg2Rad)
+            Mathf.Cos(targetAngle * Mathf.Deg2Rad),
+            Mathf.Sin(targetAngle * Mathf.Deg2Rad)
         );
+
+        // DEBUG
+        Debug.Log($"Current Angle: {currentAngle}, Target Angle: {targetAngle}, Offset: {angleOffset}");
+        Debug.Log($"Fire Direction: {fireDirection}");
+
 
         // Mermi hızını ayarla
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
