@@ -11,8 +11,8 @@ public class HexTile : MonoBehaviour
     [SerializeField] private Color occupiedColor = new Color(1f, 0.5f, 0.5f, 0.5f);
 
     [Header("Coordinate Display")]
-    [SerializeField] private bool showCoordinates = true;
-    [SerializeField] private float textSize = 0.2f;
+    [SerializeField] private bool showCoordinates = false;
+    [SerializeField] private float textSize = 0.0f;
     [SerializeField] private Color textColor = Color.black;
 
     private SpriteRenderer spriteRenderer;

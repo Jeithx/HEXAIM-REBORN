@@ -65,14 +65,16 @@ public class GameManager : MonoBehaviour
         // Wait for other systems to initialize
         yield return new WaitForSeconds(0.1f);
 
-
-
-
         // Level snapshot'ını al (Gaia sistemi için)
-        //Gaia.TakeLevelSnapshot();
-        //BURASI EKLENMİŞTİ // Gaia sisteminin düzgün çalışması için
-
-
+        if (GaiaManager.Instance != null)
+        {
+            GaiaManager.Instance.TakeLevelSnapshot();
+            Debug.Log("Level snapshot taken for Gaia system");
+        }
+        else
+        {
+            Debug.LogWarning("GaiaManager not found - Gaia restore functionality will not work!");
+        }
 
         OnBulletsChanged?.Invoke(availableBullets);
         OnTurnChanged?.Invoke(currentTurn);
@@ -411,7 +413,7 @@ public class GameManager : MonoBehaviour
     }
 
     [ContextMenu("Validate Enemy Counts")]
-    void ValidateEnemyCounts()
+    public void ValidateEnemyCounts()
     {
         // Count actual alive enemies in scene
         int actualAliveCount = 0;
