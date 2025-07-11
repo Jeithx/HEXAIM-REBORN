@@ -10,8 +10,14 @@ public class HexTile : MonoBehaviour
     [SerializeField] private Color hoverColor = new Color(1f, 1f, 0.5f, 0.5f);
     [SerializeField] private Color occupiedColor = new Color(1f, 0.5f, 0.5f, 0.5f);
 
+    [Header("Coordinate Display")]
+    [SerializeField] private bool showCoordinates = true;
+    [SerializeField] private float textSize = 0.2f;
+    [SerializeField] private Color textColor = Color.black;
+
     private SpriteRenderer spriteRenderer;
     private bool isMouseOver = false;
+    private TextMesh coordinateText;
 
     public Hex HexData => hexData;
 
@@ -28,7 +34,47 @@ public class HexTile : MonoBehaviour
     {
         hexData = hex;
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        CreateCoordinateText();
         UpdateVisuals();
+    }
+
+    void CreateCoordinateText()
+    {
+        if (!showCoordinates || hexData == null) return;
+
+        // TextMesh objesi oluştur
+        GameObject textObj = new GameObject("CoordinateText");
+        textObj.transform.SetParent(transform);
+        textObj.transform.localPosition = Vector3.zero;
+        textObj.transform.localScale = Vector3.one;
+
+        // TextMesh component ekle
+        coordinateText = textObj.AddComponent<TextMesh>();
+        coordinateText.text = $"({hexData.q},{hexData.r})";
+        coordinateText.fontSize = 20;
+        coordinateText.characterSize = textSize;
+        coordinateText.anchor = TextAnchor.MiddleCenter;
+        coordinateText.alignment = TextAlignment.Center;
+        coordinateText.color = textColor;
+
+        // Font ayarla (default font kullan)
+        coordinateText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+        // MeshRenderer ayarları
+        MeshRenderer meshRenderer = textObj.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            meshRenderer.sortingLayerName = "Default";
+            meshRenderer.sortingOrder = 10; // Hex'lerin üstünde görünsün
+        }
+
+        // Z pozisyonunu biraz öne al
+        textObj.transform.position = new Vector3(
+            transform.position.x,
+            transform.position.y,
+            transform.position.z - 0.1f
+        );
     }
 
     void OnMouseEnter()
@@ -82,12 +128,28 @@ public class HexTile : MonoBehaviour
         UpdateVisuals();
     }
 
+    void OnValidate()
+    {
+        if (Application.isPlaying && coordinateText != null)
+        {
+            coordinateText.gameObject.SetActive(showCoordinates);
+        }
+    }
+
     void OnDrawGizmosSelected()
     {
         if (hexData != null)
         {
+            // Hex merkezi
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(hexData.worldPosition, Vector3.one * 0.2f);
+
+            // Koordinat metni (Scene view için)
+            UnityEditor.Handles.color = Color.white;
+            UnityEditor.Handles.Label(
+                hexData.worldPosition + Vector3.up * 0.5f,
+                $"({hexData.q}, {hexData.r})"
+            );
 
             // Komşuları göster
             Gizmos.color = Color.green;

@@ -45,7 +45,18 @@ public class Bumper : BaseRobot
             return;
         }
 
-        shouldFireAtEndOfTurn = true;
+        // Bumper processing sırasında vurulursa sonraki tura bırak
+        if (TurnManager.Instance != null && TurnManager.Instance.IsProcessingBumpers())
+        {
+            Debug.Log($"Bumper {gameObject.name} hit during Bumper processing - will fire NEXT turn");
+            shouldFireAtEndOfTurn = true;
+        }
+        else
+        {
+            // Normal durum - bu tur sonunda ateş et
+            shouldFireAtEndOfTurn = true;
+            Debug.Log($"Bumper {gameObject.name} marked to fire at end of turn");
+        }
 
     }
 

@@ -101,6 +101,9 @@ public class TurnManager : MonoBehaviour
                 yield return new WaitForSeconds(0.1f);
             }
 
+            // Kısa bir extra bekleme - robot chain reaction'ları için
+            yield return new WaitForSeconds(0.1f);
+
             Debug.Log($"Bumper iteration {iteration} completed");
         }
 
@@ -150,5 +153,9 @@ public class TurnManager : MonoBehaviour
     public bool IsTurnActive()
     {
         return isTurnActive || processingBumpers;
+    }
+    public bool IsProcessingBumpers()
+    {
+        return processingBumpers;
     }
 }
