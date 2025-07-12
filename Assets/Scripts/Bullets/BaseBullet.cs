@@ -31,7 +31,9 @@ public class BaseBullet : MonoBehaviour
     protected virtual void HandleCollision(GameObject hitObject)
     {
 
-        if (hitObject == owner) return;
+        if (hitObject == owner) {
+            Debug.Log("player kendisine vuramaz");
+        return; }
 
         // Hex'lere çarparsa geçsin
         if (hitObject.GetComponent<HexTile>() != null)

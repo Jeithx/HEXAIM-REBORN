@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int currentTurn = 0;
 
     [Header("Level Settings")]
-    [SerializeField] private int availableBullets = 3;
+    [SerializeField] private int availableBullets = 4;
     [SerializeField] private int usedBullets = 0;
 
     [Header("Enemy Tracking")]

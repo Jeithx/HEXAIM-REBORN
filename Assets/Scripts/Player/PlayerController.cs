@@ -9,9 +9,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
 
-    [Header("Player Visual")]
-    [SerializeField] private Color playerColor = Color.blue;
-    [SerializeField] private float playerSize = 0.3f;
+    //[Header("Player Visual")]
+    //[SerializeField] private Color playerColor = Color.blue;
+    //[SerializeField] private float playerSize = 0.3f;
 
     // Player state
     private bool canFire = true;
@@ -21,15 +21,15 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        // Singleton pattern
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        //// Singleton pattern
+        //if (Instance == null)
+        //{
+        //    Instance = this;
+        //}
+        //else
+        //{
+        //    Destroy(gameObject);
+        //}
 
         playerCamera = Camera.main;
     }
@@ -40,16 +40,16 @@ public class PlayerController : MonoBehaviour
         HandleRotation();
         HandleShooting();
 
-        // TEST KODLARI (geçici)
-        if (Input.GetKeyDown(KeyCode.Q)) // Q tuşu = hasar al
-        {
-            GetComponent<Health>()?.TakeDamage(1);
-        }
+        //// TEST KODLARI (geçici)
+        //if (Input.GetKeyDown(KeyCode.Q)) // Q tuşu = hasar al
+        //{
+        //    GetComponent<Health>()?.TakeDamage(1);
+        //}
 
-        if (Input.GetKeyDown(KeyCode.E)) // E tuşu = iyileş
-        {
-            GetComponent<Health>()?.Heal(1);
-        }
+        //if (Input.GetKeyDown(KeyCode.E)) // E tuşu = iyileş
+        //{
+        //    GetComponent<Health>()?.Heal(1);
+        //}
 
         if (Input.GetKeyDown(KeyCode.R)) // R tuşu = bölümü sıfırlama kodu, basit birtane, şuanki bölümü alır onu loadlar
         {
@@ -141,74 +141,5 @@ public class PlayerController : MonoBehaviour
     public void DisableFiring()
     {
         canFire = false;
-    }
-
-    void CreateBulletPrefab()
-    {
-        // Basit mermi prefab'ı oluştur
-        GameObject bullet = new GameObject("BulletPrefab");
-
-        // Visual (küçük daire)
-        SpriteRenderer sr = bullet.AddComponent<SpriteRenderer>();
-        sr.sprite = CreateCircleSprite();
-        sr.color = Color.yellow;
-
-        // Physics
-        Rigidbody2D rb = bullet.AddComponent<Rigidbody2D>();
-        rb.gravityScale = 0; // Gravity yok
-        rb.drag = 0; // Sürtünme yok
-
-        // Collider
-        CircleCollider2D collider = bullet.AddComponent<CircleCollider2D>();
-        collider.radius = 0.05f; // Küçük mermi
-
-        bulletPrefab = bullet;
-
-        // Scene'den kaldır (sadece prefab olarak kullan)
-        bullet.SetActive(false);
-    }
-
-    Sprite CreateCircleSprite()
-    {
-        // Basit daire sprite oluştur
-        int size = 32;
-        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-        Color[] pixels = new Color[size * size];
-
-        Vector2 center = Vector2.one * size / 2;
-        float radius = size / 4f;
-
-        for (int x = 0; x < size; x++)
-        {
-            for (int y = 0; y < size; y++)
-            {
-                Vector2 point = new Vector2(x, y);
-                float distance = Vector2.Distance(point, center);
-
-                if (distance <= radius)
-                {
-                    pixels[y * size + x] = Color.white;
-                }
-                else
-                {
-                    pixels[y * size + x] = Color.clear;
-                }
-            }
-        }
-
-        texture.SetPixels(pixels);
-        texture.Apply();
-
-        return Sprite.Create(texture, new Rect(0, 0, size, size), Vector2.one * 0.5f, size);
-    }
-
-    void OnDrawGizmos()
-    {
-        // Ateş yönünü göster - transform.up kullan çünkü sprite yukarı bakıyor
-        if (firePoint != null)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(firePoint.position, firePoint.position + transform.up * 2f);
-        }
     }
 }
