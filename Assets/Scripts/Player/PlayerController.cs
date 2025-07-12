@@ -17,28 +17,26 @@ public class PlayerController : MonoBehaviour
     private bool canFire = true;
     private Camera playerCamera;
 
-    public static PlayerController Instance { get; private set; }
-
     void Awake()
     {
-        //// Singleton pattern
-        //if (Instance == null)
-        //{
-        //    Instance = this;
-        //}
-        //else
-        //{
-        //    Destroy(gameObject);
-        //}
 
         playerCamera = Camera.main;
     }
 
+    private void Start()
+    {
+        // PlayerManager'a kaydol
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.RegisterPlayer(this);
+            Debug.Log("Player registered with PlayerManager!");
+        }
+    }
 
     void Update()
     {
         HandleRotation();
-        HandleShooting();
+        //HandleShooting();
 
         //// TEST KODLARI (geçici)
         //if (Input.GetKeyDown(KeyCode.Q)) // Q tuşu = hasar al
@@ -75,27 +73,28 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
     }
 
-    void HandleShooting()
+    //void HandleShooting()
+    //{
+    //    // Sol mouse tuşuna basıldığında ateş et
+    //    if (Input.GetMouseButtonDown(0) && canFire)
+    //    {
+    //        Fire();
+    //    }
+    //}
+
+    public bool CanFire()
     {
-        // Sol mouse tuşuna basıldığında ateş et
-        if (Input.GetMouseButtonDown(0) && canFire)
-        {
-            Fire();
-        }
+        return canFire && bulletPrefab != null && firePoint != null;
     }
 
-    void Fire()
+    public void FireTowards(Vector3 targetWorldPos)
     {
-        if (bulletPrefab == null || firePoint == null || !canFire) return;
+        if (!CanFire()) return;
 
-        // Mouse pozisyonunu al
-        Vector3 mouseWorldPos = playerCamera.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPos.z = 0;
-
-        // Mermi oluştur (rotation yok)
+        // Mermi oluştur
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
 
-        // Merminin sahibini ayarla
+        // Owner ayarla
         PlayerBullet playerBullet = bullet.GetComponent<PlayerBullet>();
         if (playerBullet != null)
         {
@@ -104,32 +103,58 @@ public class PlayerController : MonoBehaviour
 
         bullet.SetActive(true);
 
-        // Bullet script ekle (5 saniye sonra imha için)
-        //bullet.AddComponent<BulletDestroyer>();
-
-        // Mermi yönünü ayarla - mouse'a doğru
+        // Yön hesapla ve ateş et
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
         if (bulletRb != null)
         {
-            Vector2 fireDirection = (mouseWorldPos - firePoint.position).normalized;
+            Vector2 fireDirection = (targetWorldPos - firePoint.position).normalized;
             bulletRb.velocity = fireDirection * bulletSpeed;
         }
 
-     
-
-        if (TurnManager.Instance != null)
-        {
-            TurnManager.Instance.StartTurn();
-        }
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.OnPlayerFired();
-        }
-
-
-        //Debug.Log("Player fired towards mouse!");
+        Debug.Log($"Player {gameObject.name} fired towards {targetWorldPos}!");
     }
+
+    //void Fire()
+    //{
+    //    if (bulletPrefab == null || firePoint == null || !canFire) return;
+
+    //    // Mouse pozisyonunu al
+    //    Vector3 mouseWorldPos = playerCamera.ScreenToWorldPoint(Input.mousePosition);
+    //    mouseWorldPos.z = 0;
+
+    //    // Mermi oluştur (rotation yok)
+    //    GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+
+    //    // Merminin sahibini ayarla
+    //    PlayerBullet playerBullet = bullet.GetComponent<PlayerBullet>();
+    //    if (playerBullet != null)
+    //    {
+    //        playerBullet.SetOwner(gameObject);
+    //    }
+
+    //    bullet.SetActive(true);
+
+    //    // Bullet script ekle (5 saniye sonra imha için)
+    //    //bullet.AddComponent<BulletDestroyer>();
+
+    //    // Mermi yönünü ayarla - mouse'a doğru
+    //    Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+    //    if (bulletRb != null)
+    //    {
+    //        Vector2 fireDirection = (mouseWorldPos - firePoint.position).normalized;
+    //        bulletRb.velocity = fireDirection * bulletSpeed;
+    //    }
+
+
+
+    //    if (PlayerManager.Instance != null)
+    //    {
+    //        PlayerManager.Instance.OnAnyPlayerFired();
+    //    }
+
+
+    //    //Debug.Log("Player fired towards mouse!");
+    //}
 
     // TurnManager tarafından çağrılacak
     public void EnableFiring()
@@ -141,5 +166,14 @@ public class PlayerController : MonoBehaviour
     public void DisableFiring()
     {
         canFire = false;
+    }
+
+    private void OnDestroy()
+    {
+        // PlayerManager'dan çık
+        if (PlayerManager.Instance != null)
+        {
+            PlayerManager.Instance.UnregisterPlayer(this);
+        }
     }
 }

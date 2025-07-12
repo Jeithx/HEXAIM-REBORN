@@ -239,23 +239,23 @@ public class GameManager : MonoBehaviour
             Debug.Log("WIN CHECK: All enemies dead ✓");
         }
 
-        // 2. Player alive?
-        if (PlayerController.Instance != null)
+        // 2. At least one player alive? (Güncellenen kısım)
+        if (PlayerManager.Instance != null)
         {
-            Health playerHealth = PlayerController.Instance.GetComponent<Health>();
-            if (playerHealth != null && playerHealth.IsDead)
+            if (PlayerManager.Instance.AreAllPlayersDead())
             {
-                Debug.Log("WIN CHECK: Player is dead - NOT WON");
+                Debug.Log("WIN CHECK: All players are dead - NOT WON");
                 return false;
             }
             else
             {
-                Debug.Log("WIN CHECK: Player is alive ✓");
+                int aliveCount = PlayerManager.Instance.GetAlivePlayerCount();
+                Debug.Log($"WIN CHECK: {aliveCount} player(s) alive ✓");
             }
         }
         else
         {
-            Debug.LogWarning("WIN CHECK: No player found!");
+            Debug.LogWarning("WIN CHECK: No PlayerManager found!");
         }
 
         // 3. Hostages alive?
@@ -292,15 +292,11 @@ public class GameManager : MonoBehaviour
             return true;
         }
 
-        // 2. Player dead?
-        if (PlayerController.Instance != null)
+        // 2. ALL players dead? (Değişen kısım)
+        if (PlayerManager.Instance != null && PlayerManager.Instance.AreAllPlayersDead())
         {
-            Health playerHealth = PlayerController.Instance.GetComponent<Health>();
-            if (playerHealth != null && playerHealth.IsDead)
-            {
-                Debug.Log("LOSE: Player died!");
-                return true;
-            }
+            Debug.Log("LOSE: All players are dead!");
+            return true;
         }
 
         // 3. Hostage dead too long?

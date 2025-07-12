@@ -36,9 +36,9 @@ public class TurnManager : MonoBehaviour
         Debug.Log("Turn started - waiting for bullets to stop");
 
         // Player'ın ateş etmesini engelle
-        if (PlayerController.Instance != null)
+        if (PlayerManager.Instance != null)
         {
-            PlayerController.Instance.DisableFiring();
+            PlayerManager.Instance.DisableFiring();
         }
 
         // Mermiler durana kadar bekle
@@ -128,10 +128,10 @@ public class TurnManager : MonoBehaviour
         isTurnActive = false;
         Debug.Log("Turn ended - player can fire again");
 
-        // Player tekrar ateş edebilir
-        if (PlayerController.Instance != null)
+        // PlayerController.Instance yerine PlayerManager kullan
+        if (PlayerManager.Instance != null)
         {
-            PlayerController.Instance.EnableFiring();
+            PlayerManager.Instance.EnableFiring();
         }
 
         // GameManager'a turn bittiğini bildir
