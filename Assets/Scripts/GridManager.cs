@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode] // <-- Editörde de çalışmasını sağlar
+//[ExecuteInEditMode] // <-- Editörde de çalışmasını sağlar
 public class GridManager : MonoBehaviour
 {
     [Header("Grid Settings")]
@@ -50,11 +50,43 @@ public class GridManager : MonoBehaviour
                 Debug.LogWarning("'Hexes' layer not found! Please create a layer named 'Hexes' in Edit > Project Settings > Tags and Layers");
             }
 
-            GenerateGrid();
+            // ÖNEMLİ: Önce mevcut hex'leri kontrol et
+            //CheckForExistingHexes();
+
+            // Sadece hex'ler yoksa oluştur
+            if (hexGrid.Count == 0)
+            {
+                Debug.Log("No existing hexes found - generating new grid");
+                GenerateGrid();
+            }
+
+
             CenterCamera();
         }
     }
+    // YENİ METOD: Sahnedeki mevcut hex'leri bul ve kaydet
+    //void CheckForExistingHexes()
+    //{
+    //    // Sahnedeki tüm HexTile'ları bul
+    //    HexTile[] existingHexTiles = FindObjectsOfType<HexTile>();
 
+    //    Debug.Log($"Found {existingHexTiles.Length} existing HexTiles in scene");
+
+    //    foreach (HexTile hexTile in existingHexTiles)
+    //    {
+    //        if (hexTile.HexData != null)
+    //        {
+    //            Hex hex = hexTile.HexData;
+    //            Vector2Int key = new Vector2Int(hex.q, hex.r);
+
+    //            // Grid'e kaydet
+    //            hexGrid[key] = hex;
+    //            hexGameObjects[key] = hexTile.gameObject;
+
+    //            //Debug.Log($"Registered existing hex at ({hex.q}, {hex.r})");
+    //        }
+    //    }
+    //}
     void OnEnable()
     {
         // Editörde otomatik grid oluştur
@@ -461,15 +493,15 @@ public class GridManager : MonoBehaviour
         hexGrid.Clear();
         hexGameObjects.Clear();
 
-        //// Editörde EditorGrid parent'ı da temizle
-        //if (!Application.isPlaying)
-        //{
-        //    GameObject editorGrid = GameObject.Find("EditorGrid");
-        //    if (editorGrid != null)
-        //    {
-        //        DestroyImmediate(editorGrid);
-        //    }
-        //}
+        // Editörde EditorGrid parent'ı da temizle
+        if (!Application.isPlaying)
+        {
+            GameObject editorGrid = GameObject.Find("EditorGrid");
+            if (editorGrid != null)
+            {
+                DestroyImmediate(editorGrid);
+            }
+        }
     }
 
     void OnDrawGizmos()

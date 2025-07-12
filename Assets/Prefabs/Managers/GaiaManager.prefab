@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1608923586737481292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2073950600581636025}
+  - component: {fileID: 853868309630473669}
+  m_Layer: 0
+  m_Name: GaiaManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2073950600581636025
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608923586737481292}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.49015978, y: 0.5019525, z: -0.09938167}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &853868309630473669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608923586737481292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19547777a341144ca3e86be73c62c9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showDebugInfo: 1
+  snapshotGizmoColor: {r: 0, g: 1, b: 1, a: 1}
+  playerPrefab: {fileID: 421577227912791996, guid: 4b98b02d5afce404bb96e21f2759d0ce, type: 3}
+  wallPrefab: {fileID: 1628107837290969918, guid: 5e898d62171f55245a7dc03bfa975c74, type: 3}
+  hayPrefab: {fileID: 0}
+  hostagePrefab: {fileID: 0}
+  gaiaPrefab: {fileID: 1628107837290969918, guid: 8da925569f85c3041902f93ca2ab8cd6, type: 3}
+  enemyPrefab: {fileID: 8870545649125115237, guid: 1c7656dc574204349a3149e55ecc615d, type: 3}
+  enemyNoGunPrefab: {fileID: 8870545649125115237, guid: 99bfe3d1cad7dad4bbf4d7d2197e902c, type: 3}
+  hunterPrefab: {fileID: 8870545649125115237, guid: 6b05137899c3a024195cd14d4cc012f8, type: 3}
+  baretta60Prefab: {fileID: 8870545649125115237, guid: 56bd7a892c5763e4e9ef9bbfed74e9b3, type: 3}
+  baretta120Prefab: {fileID: 8870545649125115237, guid: 57d0ef9d4ea7cd84b934cc81798cdadc, type: 3}
+  baretta180Prefab: {fileID: 8870545649125115237, guid: 7f3080088365c194c88bbedff0658cc8, type: 3}
+  medicPrefab: {fileID: 8870545649125115237, guid: 6a06e0f517f88c8449c43cef8bbf942c, type: 3}
+  superEnemyPrefab: {fileID: 8870545649125115237, guid: 37bf1da32d9668845aa0e14777887f85, type: 3}
+  riotPrefab: {fileID: 8870545649125115237, guid: 771dad23c7853704f83443988f2e028e, type: 3}
+  robotPrefab: {fileID: 8870545649125115237, guid: e3c3214276643f546a8bc90f0dc60a7a, type: 3}
+  bumperPrefab: {fileID: 8870545649125115237, guid: 6d4e948bc67fb714e869ec5061cb0cb3, type: 3}

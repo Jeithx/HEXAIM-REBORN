@@ -36,6 +36,28 @@ public class GaiaManager : MonoBehaviour
     [SerializeField] private bool showDebugInfo = true;
     [SerializeField] private Color snapshotGizmoColor = Color.cyan;
 
+    [Header("Prefabs)")]
+    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject wallPrefab;
+    //[SerializeField] private GameObject hayPrefab;
+    //[SerializeField] private GameObject hostagePrefab;
+    [SerializeField] private GameObject gaiaPrefab;
+
+    // Enemy prefabs
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject enemyNoGunPrefab;
+    [SerializeField] private GameObject hunterPrefab;
+    [SerializeField] private GameObject baretta60Prefab;
+    [SerializeField] private GameObject baretta120Prefab;
+    [SerializeField] private GameObject baretta180Prefab;
+    [SerializeField] private GameObject medicPrefab;
+    [SerializeField] private GameObject superEnemyPrefab;
+    [SerializeField] private GameObject riotPrefab;
+
+    // Robot prefabs
+    [SerializeField] private GameObject robotPrefab;
+    [SerializeField] private GameObject bumperPrefab;
+
     void Awake()
     {
         if (Instance == null)
@@ -64,7 +86,7 @@ public class GaiaManager : MonoBehaviour
             snapshot.hexCoords = coords;
 
             // Bu hex'teki tüm objeleri bul
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(hexData.worldPosition, Hex.HEX_SIZE * 0.7f);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(hexData.worldPosition, Hex.HEX_SIZE * 0.4f);
 
             foreach (var collider in colliders)
             {
@@ -94,10 +116,13 @@ public class GaiaManager : MonoBehaviour
     {
         var snapshot = new HexSnapshot.ObjectSnapshot();
 
+
+
         snapshot.position = obj.transform.position;
         snapshot.rotation = obj.transform.rotation;
         snapshot.scale = obj.transform.localScale;
         snapshot.prefabName = obj.name.Replace("(Clone)", "").Trim();
+
 
         // Object type'ı belirle
         if (obj.GetComponent<PlayerController>() != null)
@@ -107,7 +132,7 @@ public class GaiaManager : MonoBehaviour
         else if (obj.GetComponent<IEnemy>() != null)
         {
             snapshot.objectType = "Enemy";
-            snapshot.specificType = obj.GetType().Name;
+            snapshot.specificType = obj.GetComponent<IEnemy>().GetType().Name;
 
             // Enemy interface'inden hasHeadphones'u almaya çalış
             var enemy = obj.GetComponent<Enemy>();
@@ -137,7 +162,7 @@ public class GaiaManager : MonoBehaviour
         else if (obj.GetComponent<IRobot>() != null)
         {
             snapshot.objectType = "Robot";
-            snapshot.specificType = obj.GetType().Name;
+            snapshot.specificType = obj.GetComponent<IRobot>().GetType().Name;
 
             // Robot'un headphone durumu
             var robot = obj.GetComponent<BaseRobot>();
@@ -160,12 +185,12 @@ public class GaiaManager : MonoBehaviour
             var gaia = obj.GetComponent<Gaia>();
             snapshot.componentData["restoreHexes"] = gaia.GetRestoreHexCoords();
         }
-        else
-        {
-            // Bilinmeyen obje tipi
-            Debug.LogWarning($"Unknown object type for snapshot: {obj.name}");
-            return null;
-        }
+        //else
+        //{
+        //    // Bilinmeyen obje tipi
+        //    Debug.LogWarning($"Unknown object type for snapshot: {obj.name}");
+        //    return null;
+        //}
 
         // Health durumu
         var health = obj.GetComponent<Health>();
@@ -174,7 +199,12 @@ public class GaiaManager : MonoBehaviour
             snapshot.health = health.CurrentHp;
         }
 
-        Debug.Log($"Snapshot created for {snapshot.objectType} at {snapshot.position}");
+        if (!obj.name.Contains("Square") && !obj.name.Contains("MapBorders"))
+        {
+            Debug.Log($"SNAP: {obj.name} -> {snapshot.objectType}/{snapshot.specificType}");
+
+        }
+
         return snapshot;
     }
 
@@ -191,7 +221,7 @@ public class GaiaManager : MonoBehaviour
             if (hex == null) continue;
 
             // Bu hex'teki objeleri bul
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(hex.worldPosition, Hex.HEX_SIZE * 0.7f);
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(hex.worldPosition, Hex.HEX_SIZE * 0.4f);
             foreach (var collider in colliders)
             {
                 GameObject obj = collider.gameObject;
@@ -320,12 +350,12 @@ public class GaiaManager : MonoBehaviour
                     typeMatch = obj.GetComponent<PlayerController>() != null;
                     break;
                 case "Enemy":
-                    // Enemy tipini ve specific type'ı kontrol et
-                    if (obj.GetComponent<Enemy>() != null || obj.GetComponent<IEnemy>() != null)
+                    var enemy = obj.GetComponent<IEnemy>();
+                    if (enemy != null)
                     {
-                        // Specific type kontrolü - GetType().Name ile karşılaştır
-                        typeMatch = obj.GetType().Name == snapshot.specificType;
+                        typeMatch = enemy.GetType().Name == snapshot.specificType;
                     }
+
                     break;
                 case "Wall":
                     typeMatch = obj.GetComponent<Wall>() != null;
@@ -334,8 +364,13 @@ public class GaiaManager : MonoBehaviour
                     typeMatch = obj.GetComponent<Hay>() != null;
                     break;
                 case "Robot":
-                    typeMatch = obj.GetComponent<IRobot>() != null && obj.GetType().Name == snapshot.specificType;
+                    var robot = obj.GetComponent<IRobot>();
+                    if (robot != null)
+                    {
+                        typeMatch = robot.GetType().Name == snapshot.specificType;
+                    }
                     break;
+
                 case "Hostage":
                     typeMatch = obj.GetComponent<Hostage>() != null;
                     break;
@@ -353,185 +388,63 @@ public class GaiaManager : MonoBehaviour
         return null;
     }
 
-    GameObject CreateObjectFromSnapshot(HexSnapshot.ObjectSnapshot snapshot)
+    GameObject CreateObjectFromSnapshot(HexSnapshot.ObjectSnapshot s)
     {
-        GameObject newObj = null;
+        // 1) Doğru prefab’ı al
+        GameObject prefab = GetPrefabForSnapshot(s);
 
-        // Object tipine göre oluştur
-        switch (snapshot.objectType)
+        if (prefab == null)
         {
-            case "Player":
-                // Player prefab'ını bul veya basit bir player oluştur
-                newObj = new GameObject("Player");
-                newObj.AddComponent<PlayerController>();
-                newObj.AddComponent<Health>();
-                // Basit görsel
-                var playerSr = newObj.AddComponent<SpriteRenderer>();
-                playerSr.color = Color.blue;
-                playerSr.sprite = CreateSimpleSprite();
-                playerSr.sortingOrder = 10;
-                break;
-
-            case "Enemy":
-                newObj = CreateEnemyFromType(snapshot.specificType);
-                break;
-
-            case "Wall":
-                newObj = new GameObject("Wall");
-                newObj.AddComponent<Wall>();
-                newObj.AddComponent<BoxCollider2D>();
-                var wallSr = newObj.AddComponent<SpriteRenderer>();
-                wallSr.color = Color.gray;
-                wallSr.sprite = CreateSimpleSprite();
-                break;
-
-            case "Hay":
-                newObj = new GameObject("Hay");
-                newObj.AddComponent<Hay>();
-                newObj.AddComponent<BoxCollider2D>();
-                var haySr = newObj.AddComponent<SpriteRenderer>();
-                haySr.color = new Color(0.9f, 0.8f, 0.4f);
-                haySr.sprite = CreateSimpleSprite();
-                break;
-
-            case "Robot":
-                newObj = CreateRobotFromType(snapshot.specificType);
-                break;
-
-            case "Hostage":
-                newObj = new GameObject("Hostage");
-                newObj.AddComponent<Hostage>();
-                newObj.AddComponent<Health>();
-                var hostageSr = newObj.AddComponent<SpriteRenderer>();
-                hostageSr.color = Color.green;
-                hostageSr.sprite = CreateSimpleSprite();
-                break;
-
-            case "Gaia":
-                newObj = new GameObject("Gaia");
-                newObj.AddComponent<Gaia>();
-                newObj.AddComponent<Health>();
-                var gaiaSr = newObj.AddComponent<SpriteRenderer>();
-                gaiaSr.color = Color.cyan;
-                gaiaSr.sprite = CreateSimpleSprite();
-                break;
+            Debug.LogWarning($"Prefab atanmadı: {s.objectType}/{s.specificType}");
+            return null;
         }
 
-        if (newObj != null)
+        // 2) Instantiate
+        GameObject go = Instantiate(prefab, s.position, s.rotation);
+        go.transform.localScale = s.scale;
+
+        // 3) Ek bileşen durumlarını geri yükle
+        RestoreComponentStates(go, s);
+
+        // NOT: Enemy’ler GameManager’a kendi Start()’larında kaydolacak
+        return go;
+    }
+
+    GameObject GetPrefabForSnapshot(HexSnapshot.ObjectSnapshot s)
+    {
+        switch (s.objectType)
         {
-            newObj.transform.position = snapshot.position;
-            newObj.transform.rotation = snapshot.rotation;
-            newObj.transform.localScale = snapshot.scale;
+            case "Player": return playerPrefab;
+            case "Wall": return wallPrefab;
+            //case "Hay": return hayPrefab;
+            //case "Hostage": return hostagePrefab;
+            case "Gaia": return gaiaPrefab;
 
-            // Component state'lerini restore et
-            RestoreComponentStates(newObj, snapshot);
-
-            // Enemy ise GameManager'a hemen register et (Start() beklemeden)
-            if (snapshot.objectType == "Enemy")
-            {
-                var enemy = newObj.GetComponent<IEnemy>();
-                if (enemy != null && GameManager.Instance != null)
+            case "Enemy":
+                switch (s.specificType)
                 {
-                    Debug.Log($"Manually registering restored enemy: {newObj.name}");
-                    GameManager.Instance.RegisterEnemy(enemy);
+                    case "EnemyNoGun": return enemyNoGunPrefab;
+                    case "Hunter": return hunterPrefab;
+                    case "Baretta60": return baretta60Prefab;
+                    case "Baretta120": return baretta120Prefab;
+                    case "Baretta180": return baretta180Prefab;
+                    case "Medic": return medicPrefab;
+                    case "SuperEnemy": return superEnemyPrefab;
+                    case "Riot": return riotPrefab;
+                    default: return enemyPrefab;  // genel düşman
                 }
-            }
-        }
 
-        return newObj;
-    }
-
-    GameObject CreateEnemyFromType(string typeName)
-    {
-        GameObject enemy = new GameObject(typeName);
-
-        // Type'a göre component ekle
-        switch (typeName)
-        {
-            case "Enemy":
-                enemy.AddComponent<Enemy>();
-                break;
-            case "EnemyNoGun":
-                enemy.AddComponent<EnemyNoGun>();
-                break;
-            case "Baretta60":
-                enemy.AddComponent<Baretta60>();
-                break;
-            case "Baretta120":
-                enemy.AddComponent<Baretta120>();
-                break;
-            case "Baretta180":
-                enemy.AddComponent<Baretta180>();
-                break;
-            case "Hunter":
-                enemy.AddComponent<Hunter>();
-                break;
-            case "Medic":
-                enemy.AddComponent<Medic>();
-                break;
-            case "SuperEnemy":
-                enemy.AddComponent<SuperEnemy>();
-                break;
-            case "Riot":
-                enemy.AddComponent<Riot>();
-                break;
-            default:
-                enemy.AddComponent<Enemy>();
-                break;
-        }
-
-        // Ortak component'ler
-        enemy.AddComponent<Health>();
-        enemy.AddComponent<CircleCollider2D>();
-        var sr = enemy.AddComponent<SpriteRenderer>();
-        sr.color = Color.red;
-        sr.sprite = CreateSimpleSprite();
-        sr.sortingOrder = 5;
-
-        return enemy;
-    }
-
-    GameObject CreateRobotFromType(string typeName)
-    {
-        GameObject robot = new GameObject(typeName);
-
-        switch (typeName)
-        {
             case "Robot":
-                robot.AddComponent<Robot>();
-                break;
-            case "Bumper":
-                robot.AddComponent<Bumper>();
-                break;
+                return s.specificType == "Bumper" ? bumperPrefab : robotPrefab;
+
             default:
-                robot.AddComponent<Robot>();
-                break;
+                return null;
         }
-
-        // Robot görseli
-        robot.AddComponent<CircleCollider2D>();
-        var sr = robot.AddComponent<SpriteRenderer>();
-        sr.color = Color.magenta;
-        sr.sprite = CreateSimpleSprite();
-        sr.sortingOrder = 5;
-
-        return robot;
     }
 
-    Sprite CreateSimpleSprite()
-    {
-        // Basit kare sprite
-        Texture2D tex = new Texture2D(32, 32);
-        Color[] pixels = new Color[32 * 32];
-        for (int i = 0; i < pixels.Length; i++)
-        {
-            pixels[i] = Color.white;
-        }
-        tex.SetPixels(pixels);
-        tex.Apply();
 
-        return Sprite.Create(tex, new Rect(0, 0, 32, 32), Vector2.one * 0.5f, 32);
-    }
+
+
 
     void RestoreComponentStates(GameObject obj, HexSnapshot.ObjectSnapshot snapshot)
     {
@@ -548,7 +461,7 @@ public class GaiaManager : MonoBehaviour
             var enemy = obj.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.hasHeadphones = snapshot.hasHeadphones;
+                enemy.hasHeadphones = !snapshot.hasHeadphones;
             }
             else
             {
@@ -557,13 +470,13 @@ public class GaiaManager : MonoBehaviour
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 if (hasHeadphonesField != null)
                 {
-                    hasHeadphonesField.SetValue(obj, snapshot.hasHeadphones);
+                    hasHeadphonesField.SetValue(obj, !snapshot.hasHeadphones);
                 }
             }
         }
 
         // Robot specific
-        if (snapshot.objectType == "Robot" && snapshot.componentData.ContainsKey("hasHeadphones"))
+        if (snapshot.objectType == "Robot")
         {
             // Reflection ile private field'ı set et
             var robot = obj.GetComponent<BaseRobot>();
@@ -571,7 +484,10 @@ public class GaiaManager : MonoBehaviour
             {
                 var field = robot.GetType().GetField("hasHeadphones",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                field?.SetValue(robot, snapshot.componentData["hasHeadphones"]);
+                if (field != null)
+                {
+                    field.SetValue(robot, !snapshot.hasHeadphones);
+                }
             }
         }
 

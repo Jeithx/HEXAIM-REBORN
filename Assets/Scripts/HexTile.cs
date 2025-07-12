@@ -18,6 +18,7 @@ public class HexTile : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private bool isMouseOver = false;
     private TextMesh coordinateText;
+    private GameObject textObject; // TextMesh objesini tutmak için
 
     public Hex HexData => hexData;
 
@@ -41,16 +42,22 @@ public class HexTile : MonoBehaviour
 
     void CreateCoordinateText()
     {
-        if (!showCoordinates || hexData == null) return;
+        if (hexData == null) return;
+
+        // Önce mevcut text objelerini temizle
+        CleanupCoordinateText();
+
+        // Sadece showCoordinates true ise oluştur
+        if (!showCoordinates) return;
 
         // TextMesh objesi oluştur
-        GameObject textObj = new GameObject("CoordinateText");
-        textObj.transform.SetParent(transform);
-        textObj.transform.localPosition = Vector3.zero;
-        textObj.transform.localScale = Vector3.one;
+        textObject = new GameObject("CoordinateText");
+        textObject.transform.SetParent(transform);
+        textObject.transform.localPosition = Vector3.zero;
+        textObject.transform.localScale = Vector3.one;
 
         // TextMesh component ekle
-        coordinateText = textObj.AddComponent<TextMesh>();
+        coordinateText = textObject.AddComponent<TextMesh>();
         coordinateText.text = $"({hexData.q},{hexData.r})";
         coordinateText.fontSize = 20;
         coordinateText.characterSize = textSize;
@@ -62,7 +69,7 @@ public class HexTile : MonoBehaviour
         coordinateText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         // MeshRenderer ayarları
-        MeshRenderer meshRenderer = textObj.GetComponent<MeshRenderer>();
+        MeshRenderer meshRenderer = textObject.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
             meshRenderer.sortingLayerName = "Default";
@@ -70,11 +77,39 @@ public class HexTile : MonoBehaviour
         }
 
         // Z pozisyonunu biraz öne al
-        textObj.transform.position = new Vector3(
+        textObject.transform.position = new Vector3(
             transform.position.x,
             transform.position.y,
             transform.position.z - 0.1f
         );
+    }
+
+    void CleanupCoordinateText()
+    {
+        // Mevcut text objesini sil
+        if (textObject != null)
+        {
+            if (Application.isPlaying)
+                Destroy(textObject);
+            else
+                DestroyImmediate(textObject);
+
+            textObject = null;
+            coordinateText = null;
+        }
+
+        // Ek güvenlik: CoordinateText isimli child objelerini bul ve sil
+        Transform[] children = GetComponentsInChildren<Transform>();
+        foreach (Transform child in children)
+        {
+            if (child != transform && child.name == "CoordinateText")
+            {
+                if (Application.isPlaying)
+                    Destroy(child.gameObject);
+                else
+                    DestroyImmediate(child.gameObject);
+            }
+        }
     }
 
     void OnMouseEnter()
@@ -130,10 +165,17 @@ public class HexTile : MonoBehaviour
 
     void OnValidate()
     {
-        if (Application.isPlaying && coordinateText != null)
+        // Inspector'da değişiklik yapıldığında koordinat metnini güncelle
+        if (Application.isPlaying)
         {
-            coordinateText.gameObject.SetActive(showCoordinates);
+            CreateCoordinateText();
         }
+    }
+
+    void OnDestroy()
+    {
+        // Obje yok edilirken text objelerini temizle
+        CleanupCoordinateText();
     }
 
     void OnDrawGizmosSelected()

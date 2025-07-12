@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3253070205909011995}
   - component: {fileID: 3731718619238743836}
   - component: {fileID: 2875713550685956906}
+  - component: {fileID: 7173494648454633268}
   m_Layer: 0
   m_Name: Green_Wall
   m_TagString: Untagged
@@ -130,3 +131,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 3.069407, y: 2.6693797}
   m_EdgeRadius: 0
+--- !u!114 &7173494648454633268
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628107837290969918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72e851a0f1feaec4c9e52ef66f2dfd50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
