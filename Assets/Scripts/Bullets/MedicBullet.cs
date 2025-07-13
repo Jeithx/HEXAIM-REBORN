@@ -25,6 +25,13 @@ public class MedicBullet : BaseBullet
             return;
         }
 
+        if (hitObject.GetComponent<Hay>() != null)
+        {
+            Destroy(hitObject.gameObject);
+            DestroyBullet();
+            return;
+        }
+
         // Karaktere çarparsa iyileştir
         Health health = hitObject.GetComponent<Health>();
         if (health != null)

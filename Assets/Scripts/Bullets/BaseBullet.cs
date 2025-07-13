@@ -6,9 +6,9 @@ public class BaseBullet : MonoBehaviour
     [SerializeField] private float destroyTime = 5f;
     [SerializeField] protected int damage = 1;
 
-    private GameObject owner;
+    protected GameObject owner;
 
-    public void SetOwner(GameObject newOwner)
+    public virtual void SetOwner(GameObject newOwner)
     {
         owner = newOwner;
     }
@@ -68,6 +68,13 @@ public class BaseBullet : MonoBehaviour
         // Duvar'a çarparsa dur
         if (hitObject.GetComponent<Wall>() != null)
         {
+            DestroyBullet();
+            return;
+        }
+
+        if (hitObject.GetComponent<Hay>() != null)
+        {
+            Destroy(hitObject.gameObject);
             DestroyBullet();
             return;
         }

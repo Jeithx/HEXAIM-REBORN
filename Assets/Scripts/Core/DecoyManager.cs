@@ -17,7 +17,10 @@ public class DecoyManager : MonoBehaviour
     public static DecoyManager Instance { get; private set; }
 
     // 60°'lik yönler: 0°, 60°, 120°, 180°, 240°, 300°   
+    private float[] currentDirections; // Aktif açı dizisi
     private readonly float[] hexDirections = { 0f, 60f, 120f, 180f, 240f, 300f };
+    private readonly float[] hexDirectionsSplitter = { 30f, 90f, 150f, 210f, 270f, -30f };
+
 
     [SerializeField] private LayerMask decoyTargetMask = ~0;  // Inspector’da hepsi açık gelir
 
@@ -90,6 +93,15 @@ public class DecoyManager : MonoBehaviour
             if (decoyable.CanBeDecoyed)
             {
                 targetEnemy = clickedObject;
+                // Splitter mı kontrol et
+                if (targetEnemy.GetComponent<Splitter>() != null)
+                {
+                    currentDirections = hexDirectionsSplitter;
+                }
+                else
+                {
+                    currentDirections = hexDirections;
+                }
                 targetDecoyable = decoyable;
                 isDecoyActive = true;
 
@@ -97,13 +109,6 @@ public class DecoyManager : MonoBehaviour
                 float currentAngle = targetEnemy.transform.eulerAngles.z;
                 currentDirectionIndex = GetNearestDirectionIndex(currentAngle);
 
-                // Görsel feedback
-                //targetSpriteRenderer = targetEnemy.GetComponent<SpriteRenderer>();
-                //if (targetSpriteRenderer != null)
-                //{
-                //    originalColor = targetSpriteRenderer.color;
-                //    targetSpriteRenderer.color = decoyHighlightColor;
-                //}
 
                 // Decoy başlangıç eventi
                 targetDecoyable.OnDecoyStart();
@@ -146,7 +151,8 @@ public class DecoyManager : MonoBehaviour
         if (nearestIndex != currentDirectionIndex)
         {
             currentDirectionIndex = nearestIndex;
-            float targetAngle = hexDirections[currentDirectionIndex];
+
+            float targetAngle = currentDirections[currentDirectionIndex];
             targetEnemy.transform.rotation = Quaternion.AngleAxis(targetAngle, Vector3.forward);
 
             Debug.Log($"Decoy rotated to {targetAngle}° (index {currentDirectionIndex})");
@@ -158,7 +164,7 @@ public class DecoyManager : MonoBehaviour
         if (!isDecoyActive || targetEnemy == null) return;
 
         // Son pozisyonu uygula
-        float finalAngle = hexDirections[currentDirectionIndex];
+        float finalAngle = currentDirections[currentDirectionIndex];
         targetEnemy.transform.rotation = Quaternion.AngleAxis(finalAngle, Vector3.forward);
 
         // Görsel feedback'i geri al
@@ -189,11 +195,11 @@ public class DecoyManager : MonoBehaviour
         if (angle < 0) angle += 360f;
 
         int nearestIndex = 0;
-        float minDifference = Mathf.Abs(Mathf.DeltaAngle(angle, hexDirections[0]));
+        float minDifference = Mathf.Abs(Mathf.DeltaAngle(angle, currentDirections[0]));
 
         for (int i = 1; i < hexDirections.Length; i++)
         {
-            float difference = Mathf.Abs(Mathf.DeltaAngle(angle, hexDirections[i]));
+            float difference = Mathf.Abs(Mathf.DeltaAngle(angle, currentDirections[i]));
             if (difference < minDifference)
             {
                 minDifference = difference;

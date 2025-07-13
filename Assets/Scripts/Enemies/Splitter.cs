@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-public class Robot : BaseRobot
+public class Splitter : BaseRobot
 {
     [Header("Robot Settings")]
-    [SerializeField] private GameObject robotBulletPrefab;
+    [SerializeField] private GameObject splitterBulletPrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
 
@@ -49,9 +49,9 @@ public class Robot : BaseRobot
 
     void FireBullet()
     {
-        if (robotBulletPrefab == null || firePoint == null || isDestroyed) return;
+        if (splitterBulletPrefab == null || firePoint == null || isDestroyed) return;
 
-        GameObject bullet = Instantiate(robotBulletPrefab, firePoint.position, transform.rotation);
+        GameObject bullet = Instantiate(splitterBulletPrefab, firePoint.position, transform.rotation);
 
         BaseBullet bulletScript = bullet.GetComponent<BaseBullet>();
         if (bulletScript != null)

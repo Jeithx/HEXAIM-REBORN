@@ -15,6 +15,12 @@ public class PiercingBullet : BaseBullet
             return;
         }
 
+        if (hitObject.GetComponent<Hay>() != null)
+        {
+            Destroy(hitObject.gameObject);
+            return;
+        }
+
         IRobot robot = hitObject.GetComponent<IRobot>();
         if (robot != null)
         {

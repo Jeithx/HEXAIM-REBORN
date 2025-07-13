@@ -3,24 +3,20 @@ using System.Collections;
 
 public class BumperBullet : BaseBullet
 {
-    [Header("Bumper Bullet Settings")]
-    [SerializeField] private Color bulletColor = Color.white;
 
-    void Start()
-    {
-        // Bumper mermi görsel ayarları
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            sr.color = bulletColor;
-        }
-    }
 
     protected override void DefaultCollisionBehavior(GameObject hitObject)
     {
         // Duvar'a çarparsa dur
         if (hitObject.GetComponent<Wall>() != null)
         {
+            DestroyBullet();
+            return;
+        }
+
+        if (hitObject.GetComponent<Hay>() != null)
+        {
+            Destroy(hitObject.gameObject);
             DestroyBullet();
             return;
         }

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-public class Robot : BaseRobot
+public class TeleporterRobot : BaseRobot
 {
-    [Header("Robot Settings")]
-    [SerializeField] private GameObject robotBulletPrefab;
+    [Header("TeleporterRobot Settings")]
+    [SerializeField] private GameObject teleporterRobotBulletPrefab;
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
 
@@ -49,9 +49,9 @@ public class Robot : BaseRobot
 
     void FireBullet()
     {
-        if (robotBulletPrefab == null || firePoint == null || isDestroyed) return;
+        if (teleporterRobotBulletPrefab == null || firePoint == null || isDestroyed) return;
 
-        GameObject bullet = Instantiate(robotBulletPrefab, firePoint.position, transform.rotation);
+        GameObject bullet = Instantiate(teleporterRobotBulletPrefab, firePoint.position, transform.rotation);
 
         BaseBullet bulletScript = bullet.GetComponent<BaseBullet>();
         if (bulletScript != null)
@@ -66,6 +66,6 @@ public class Robot : BaseRobot
             bulletRb.velocity = fireDirection * bulletSpeed;
         }
 
-        Debug.Log($"Splitter fired a push bullet!");
+        Debug.Log($"Teleporter fired a bullet!");
     }
 }
