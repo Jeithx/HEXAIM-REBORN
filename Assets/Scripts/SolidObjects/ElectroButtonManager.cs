@@ -44,7 +44,7 @@ public class ElectroButtonManager : MonoBehaviour
             // Button durumu değişti, gate'lerin yeniden kontrol etmesi gerekiyor
             if (gate != null)
             {
-                gate.OnDecoyApplied(); // Genel restart metodunu çağır
+                gate.RestartChecking(); // Genel restart metodunu çağır
             }
         }
     }

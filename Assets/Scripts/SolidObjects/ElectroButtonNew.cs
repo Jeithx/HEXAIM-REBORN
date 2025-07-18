@@ -1,4 +1,4 @@
-// ElectroButtonNew.cs (Güncellenen)
+ï»¿// ElectroButtonNew.cs (GÃ¼ncellenen)
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +20,7 @@ public class ElectroButtonNew : MonoBehaviour
             Debug.Log($"Button hit by bullet");
             isActive = !isActive; // Toggle button state
             Destroy(other.gameObject); // Mermi yok et
-            // Tüm sistemi toggle et
+            // TÃ¼m sistemi toggle et
             if (manager != null)
             {
                 manager.ToggleElectricity();

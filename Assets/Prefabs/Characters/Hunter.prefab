@@ -109,7 +109,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 5e3a3d1dcdd6e914e92196a6468cde4f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ec00b07c3f853b249a860cb6541a1310, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -217,3 +217,4 @@ MonoBehaviour:
   obstacleLayerMask:
     serializedVersion: 2
     m_Bits: 87
+  hasHeadphones: 1
