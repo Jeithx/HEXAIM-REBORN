@@ -163,6 +163,11 @@ public class DecoyManager : MonoBehaviour
     {
         if (!isDecoyActive || targetEnemy == null) return;
 
+        if (targetEnemy.GetComponent<ElectroGateNew>() != null)
+        {
+            ElectroGateNew gate = targetEnemy.GetComponent<ElectroGateNew>();
+            gate.OnDecoyApplied();
+        }
         // Son pozisyonu uygula
         float finalAngle = currentDirections[currentDirectionIndex];
         targetEnemy.transform.rotation = Quaternion.AngleAxis(finalAngle, Vector3.forward);

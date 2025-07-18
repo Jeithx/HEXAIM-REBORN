@@ -201,7 +201,7 @@ public class GaiaManager : MonoBehaviour
 
         if (!obj.name.Contains("Square") && !obj.name.Contains("MapBorders"))
         {
-            Debug.Log($"SNAP: {obj.name} -> {snapshot.objectType}/{snapshot.specificType}");
+            //Debug.Log($"SNAP: {obj.name} -> {snapshot.objectType}/{snapshot.specificType}");
 
         }
 
@@ -214,6 +214,12 @@ public class GaiaManager : MonoBehaviour
 
         // Önce bu hex'lerdeki mevcut objeleri topla
         Dictionary<GameObject, bool> objectsToProcess = new Dictionary<GameObject, bool>();
+
+        ElectroGateNew[] gates = FindObjectsOfType<ElectroGateNew>();
+        foreach (var gate in gates)
+        {
+            gate?.OnGaiaRestore();
+        }
 
         foreach (var coords in hexCoords)
         {

@@ -1,13 +1,14 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ElectroButtonManager: MonoBehaviour
+public class ElectroButtonManager : MonoBehaviour
 {
-
     [Header("Button Settings")]
     [SerializeField] private List<ElectroButtonNew> allButtons = new List<ElectroButtonNew>();
+    [SerializeField] private bool electricityStartsActive = false; // Başlangıç durumu
 
+    private bool isElectricityActive;
 
     private void Start()
     {
@@ -15,26 +16,36 @@ public class ElectroButtonManager: MonoBehaviour
         {
             allButtons.AddRange(FindObjectsOfType<ElectroButtonNew>());
         }
+
+        isElectricityActive = electricityStartsActive;
+        Debug.Log($"Electricity system started. Active: {isElectricityActive}");
     }
 
-
-    public bool ShouldCheckConnections()
+    public bool IsElectricityActive()
     {
-        return AreAllButtonsAreActive();
+        return isElectricityActive;
     }
 
-    private bool AreAllButtonsAreActive()
+    public void ToggleElectricity()
     {
-        foreach (ElectroButtonNew button in allButtons)
+        isElectricityActive = !isElectricityActive;
+        Debug.Log($"Electricity toggled. Now active: {isElectricityActive}");
+
+        // Tüm ElectroGate'lere bildir
+        NotifyAllGates();
+    }
+
+    void NotifyAllGates()
+    {
+        ElectroGateNew[] gates = FindObjectsOfType<ElectroGateNew>();
+
+        foreach (var gate in gates)
         {
-            if (button.isActive)
+            // Button durumu değişti, gate'lerin yeniden kontrol etmesi gerekiyor
+            if (gate != null)
             {
-                Debug.Log("buttons are active");
-                return true;
+                gate.OnDecoyApplied(); // Genel restart metodunu çağır
             }
         }
-        Debug.Log("All buttons are inactive");
-        return false;
-
     }
 }
