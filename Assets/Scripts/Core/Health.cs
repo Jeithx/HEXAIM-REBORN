@@ -26,6 +26,11 @@ public class Health : MonoBehaviour
 
     void Awake()
     {
+
+        if (this.GetComponent<Gaia>() != null)
+        {
+            startingHp = 100;
+        }
         aliveLayer = gameObject.layer;
 
         // SpriteRenderer'ı cache'le

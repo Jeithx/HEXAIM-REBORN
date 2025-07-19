@@ -41,7 +41,7 @@ public class TeleporterBullet : BaseBullet
         {
             Vector3 temp = owner.transform.position;
             owner.transform.position = hitObject.transform.position;
-            hitObject.transform.position = temp;
+            hitObject.transform.parent.gameObject.transform.position = temp;
 
             Debug.Log($"Teleported {owner.name} to {hitObject.name} position and vice versa.");
         }

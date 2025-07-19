@@ -178,29 +178,29 @@ public class HexTile : MonoBehaviour
         CleanupCoordinateText();
     }
 
-    void OnDrawGizmosSelected()
-    {
-        if (hexData != null)
-        {
-            // Hex merkezi
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(hexData.worldPosition, Vector3.one * 0.2f);
+    //void OnDrawGizmosSelected()
+    //{
+    //    if (hexData != null)
+    //    {
+    //        // Hex merkezi
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawWireCube(hexData.worldPosition, Vector3.one * 0.2f);
 
-            // Koordinat metni (Scene view için)
-            UnityEditor.Handles.color = Color.white;
-            UnityEditor.Handles.Label(
-                hexData.worldPosition + Vector3.up * 0.5f,
-                $"({hexData.q}, {hexData.r})"
-            );
+    //        // Koordinat metni (Scene view için)
+    //        UnityEditor.Handles.color = Color.white;
+    //        UnityEditor.Handles.Label(
+    //            hexData.worldPosition + Vector3.up * 0.5f,
+    //            $"({hexData.q}, {hexData.r})"
+    //        );
 
-            // Komşuları göster
-            Gizmos.color = Color.green;
-            Hex[] neighbors = hexData.GetNeighbors();
-            foreach (var neighbor in neighbors)
-            {
-                Gizmos.DrawLine(hexData.worldPosition, neighbor.worldPosition);
-                Gizmos.DrawWireSphere(neighbor.worldPosition, 0.05f);
-            }
-        }
-    }
+    //        // Komşuları göster
+    //        Gizmos.color = Color.green;
+    //        Hex[] neighbors = hexData.GetNeighbors();
+    //        foreach (var neighbor in neighbors)
+    //        {
+    //            Gizmos.DrawLine(hexData.worldPosition, neighbor.worldPosition);
+    //            Gizmos.DrawWireSphere(neighbor.worldPosition, 0.05f);
+    //        }
+    //    }
+    //}
 }

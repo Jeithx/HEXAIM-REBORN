@@ -229,17 +229,17 @@ public class Gaia : MonoBehaviour
         }
     }
 
-    void OnDrawGizmosSelected()
-    {
-        // Seçiliyken hex koordinatlarını göster
-        if (restoreHexCoordinates == null) return;
+    //void OnDrawGizmosSelected()
+    //{
+    //    // Seçiliyken hex koordinatlarını göster
+    //    if (restoreHexCoordinates == null) return;
 
-        UnityEditor.Handles.color = Color.white;
+    //    UnityEditor.Handles.color = Color.white;
 
-        foreach (var coords in restoreHexCoordinates)
-        {
-            Vector3 hexWorldPos = Hex.HexToWorldPosition(coords.x, coords.y);
-            UnityEditor.Handles.Label(hexWorldPos + Vector3.up * 0.5f, $"({coords.x},{coords.y})");
-        }
-    }
+    //    foreach (var coords in restoreHexCoordinates)
+    //    {
+    //        Vector3 hexWorldPos = Hex.HexToWorldPosition(coords.x, coords.y);
+    //        UnityEditor.Handles.Label(hexWorldPos + Vector3.up * 0.5f, $"({coords.x},{coords.y})");
+    //    }
+    //}
 }
