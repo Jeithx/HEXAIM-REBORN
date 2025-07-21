@@ -12,8 +12,8 @@ public class Health : MonoBehaviour
 
     private int currentHp;
     private bool isDead = false;
-    private SpriteRenderer spriteRenderer;
-    private Color originalColor;
+    private SpriteRenderer[] allSpriteRenderers; // Tüm sprite renderer'ları sakla
+    private Color[] originalColors; // Orijinal renkleri sakla
 
     // Events
     public System.Action OnDeath;
@@ -33,11 +33,31 @@ public class Health : MonoBehaviour
         }
         aliveLayer = gameObject.layer;
 
-        // SpriteRenderer'ı cache'le
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
+        allSpriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        originalColors = new Color[allSpriteRenderers.Length];
+
+        // Orijinal renkleri kaydet
+        for (int i = 0; i < allSpriteRenderers.Length; i++)
         {
-            originalColor = spriteRenderer.color;
+            originalColors[i] = allSpriteRenderers[i].color;
+        }
+    }
+
+    private void SetAllSpritesAlpha(float alpha)
+    {
+        for (int i = 0; i < allSpriteRenderers.Length; i++)
+        {
+            Color fadeColor = originalColors[i];
+            fadeColor.a = alpha;
+            allSpriteRenderers[i].color = fadeColor;
+        }
+    }
+
+    private void RestoreOriginalColors()
+    {
+        for (int i = 0; i < allSpriteRenderers.Length; i++)
+        {
+            allSpriteRenderers[i].color = originalColors[i];
         }
     }
 
@@ -95,13 +115,7 @@ public class Health : MonoBehaviour
         OnDeath?.Invoke();
         //Debug.Log($"{gameObject.name} died!");
 
-        // Sprite'ı soluklaştır (yok etme)
-        if (spriteRenderer != null)
-        {
-            Color fadeColor = originalColor;
-            fadeColor.a = deadAlpha;
-            spriteRenderer.color = fadeColor;
-        }
+        SetAllSpritesAlpha(deadAlpha); // Tüm sprite'ları soluk yap
 
         gameObject.layer = LayerMask.NameToLayer("DeadCharacters");
         //Debug.Log($"{gameObject.name} moved to DeadCharacters layer");
@@ -117,11 +131,8 @@ public class Health : MonoBehaviour
         OnHealthChanged?.Invoke(currentHp);
         Debug.Log($"{gameObject.name} revived!");
 
-        // Sprite'ı normale döndür
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = originalColor;
-        }
+        // Tüm sprite'ları normale döndür
+        RestoreOriginalColors();
         gameObject.layer = aliveLayer;
 
 

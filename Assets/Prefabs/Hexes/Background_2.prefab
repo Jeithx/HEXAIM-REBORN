@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1628107837290969918
+--- !u!1 &6683355057553576832
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,39 +8,39 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3253070205909011995}
-  - component: {fileID: 3731718619238743836}
-  - component: {fileID: 2913148020218354486}
-  - component: {fileID: 3318904007039596488}
-  m_Layer: 0
-  m_Name: Hay
+  - component: {fileID: 2082495238105517926}
+  - component: {fileID: 7873538197711959549}
+  - component: {fileID: 8238522442910086212}
+  - component: {fileID: 9082191473028905655}
+  m_Layer: 8
+  m_Name: Background_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3253070205909011995
+--- !u!4 &2082495238105517926
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628107837290969918}
+  m_GameObject: {fileID: 6683355057553576832}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.36, y: 0.36, z: 0.36}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &3731718619238743836
+--- !u!212 &7873538197711959549
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628107837290969918}
+  m_GameObject: {fileID: 6683355057553576832}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -74,37 +74,25 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 7561a4ba769a3fc489ae7b08ec439677, type: 3}
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: 13f3d8d1456995d4fb09b8d9f9be8a0a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 3.93, y: 3.57}
+  m_Size: {x: 3.93, y: 3.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2913148020218354486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628107837290969918}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ca338bfd01518147a56aa1130bbdfd2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!60 &3318904007039596488
+--- !u!60 &8238522442910086212
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1628107837290969918}
+  m_GameObject: {fileID: 6683355057553576832}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -134,36 +122,42 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 3.08, y: 2.79}
-    newSize: {x: 3.93, y: 3.57}
+    oldSize: {x: 1.31, y: 1.1666666}
+    newSize: {x: 3.93, y: 3.5}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 1.18, y: -0.325}
-      - {x: 1.29, y: -0.13499999}
-      - {x: 1.3299999, y: -0.055}
-      - {x: 1.3299999, y: 0.074999996}
-      - {x: 1.28, y: 0.155}
-      - {x: 0.79999995, y: 1.005}
-      - {x: 0.69, y: 1.145}
-      - {x: 0.62, y: 1.175}
-      - {x: -0.61, y: 1.175}
-      - {x: -0.65999997, y: 1.155}
-      - {x: -0.72999996, y: 1.095}
-      - {x: -0.97999996, y: 0.66499996}
-      - {x: -1.28, y: 0.145}
-      - {x: -1.3199999, y: 0.055}
-      - {x: -1.3199999, y: -0.065}
-      - {x: -1.24, y: -0.205}
-      - {x: -0.78999996, y: -0.98499995}
-      - {x: -0.72999996, y: -1.0749999}
-      - {x: -0.66999996, y: -1.145}
-      - {x: -0.62, y: -1.165}
-      - {x: 0.63, y: -1.165}
-      - {x: 0.68, y: -1.145}
-      - {x: 0.74, y: -1.0849999}
-      - {x: 0.88, y: -0.84499997}
+    - - {x: 0.30119735, y: 0.52998}
+      - {x: -0.3085403, y: 0.5299162}
+      - {x: -0.62294203, y: 0.0022718608}
+      - {x: -0.30994892, y: -0.5382451}
+      - {x: 0.28910172, y: -0.538245}
+      - {x: 0.5937557, y: -0.006066978}
   m_UseDelaunayMesh: 0
+--- !u!114 &9082191473028905655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6683355057553576832}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be920d81610dc0c4e9fe6cadcc297df0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hexData:
+    q: 0
+    r: 0
+    worldPosition: {x: 0, y: 0, z: 0}
+    isOccupied: 0
+    occupiedBy: {fileID: 0}
+  normalColor: {r: 0.8, g: 0.8, b: 0.8, a: 0.3}
+  hoverColor: {r: 1, g: 1, b: 0.5, a: 0.5}
+  occupiedColor: {r: 1, g: 0.5, b: 0.5, a: 0.5}
+  showCoordinates: 0
+  textSize: 0
+  textColor: {r: 0, g: 0, b: 0, a: 1}

@@ -104,6 +104,11 @@ public static class PushCalculator
                 return hit.gameObject;
             }
 
+            if (hit.GetComponent<Hay>() != null)
+            {
+                return hit.gameObject;
+            }
+
             // Başka karakter
             if (hit.GetComponent<Health>() != null)
             {

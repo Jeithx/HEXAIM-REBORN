@@ -7,10 +7,13 @@ public class GridManager : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private int gridWidth = 21;  // yatay
     [SerializeField] private int gridHeight = 11; // dikey
-    [SerializeField] private GameObject hexPrefab;
+
+    [Header("Background Prefabs")]
+    [SerializeField] private GameObject evenColumnPrefab;   // BG-1
+    [SerializeField] private GameObject oddColumnPrefab;    // BG-2
 
     [Header("Visual Settings")]
-    [SerializeField] private bool showGridLines = true;
+    [SerializeField] private bool showGridLines = false;
     [SerializeField] private Color gridLineColor = Color.white;
 
     [Header("Editor Settings")]
@@ -44,6 +47,13 @@ public class GridManager : MonoBehaviour
     {
         if (Application.isPlaying)
         {
+            // Sahnedeki EditorGrid varsa temizle (önceden oluşturulmuş grid kalıntıları için)
+            GameObject editorGrid = GameObject.Find("EditorGrid");
+            if (editorGrid != null)
+            {
+                Destroy(editorGrid); // Play mode'da çalıştığı için Destroy kullanılır
+            }
+
             // Layer kontrolü
             if (LayerMask.NameToLayer("Hexes") == -1)
             {
@@ -133,11 +143,11 @@ public class GridManager : MonoBehaviour
     {
         ClearGrid();
 
-        // Sadece play mode'da prefab oluştur
-        if (hexPrefab == null && Application.isPlaying)
-        {
-            CreateSimpleHexPrefab();
-        }
+        //// Sadece play mode'da prefab oluştur
+        //if (hexPrefab == null && Application.isPlaying)
+        //{
+        //    CreateSimpleHexPrefab();
+        //}
 
         Transform gridParent = transform;
 
@@ -178,6 +188,9 @@ public class GridManager : MonoBehaviour
         }
 
         Debug.Log($"Grid oluşturuldu: {hexGrid.Count} hex ({gridWidth}x{gridHeight}) - Editor Mode: {!Application.isPlaying}");
+
+
+
     }
 
     void CreateHexAt(int q, int r, Transform parent = null)
@@ -187,91 +200,53 @@ public class GridManager : MonoBehaviour
         Vector2Int key = new Vector2Int(q, r);
         hexGrid[key] = hex;
 
+        // *** YENİ: Sütun numarasına göre prefab seç ***
+        GameObject selectedPrefab = GetPrefabForColumn(r);
+
+        // *** KONTROL: Prefab yoksa hex oluşturma! ***
+        if (selectedPrefab == null)
+        {
+            Debug.LogWarning($"No prefab found for hex at ({q}, {r}). Skipping hex creation.");
+            return; // Hex oluşturma, sadece data'yı kaydet
+        }
+
         // GameObject oluştur
         GameObject hexObj;
 
-        // Prefab yoksa veya geçersizse yeni GameObject oluştur
-        if (hexPrefab == null || (!Application.isPlaying &&
-#if UNITY_EDITOR
-            UnityEditor.PrefabUtility.GetPrefabAssetType(hexPrefab) == UnityEditor.PrefabAssetType.NotAPrefab
-#else
-            false
-#endif
-            ))
+        // Prefab'ı kullan
+        if (Application.isPlaying)
         {
-            // Basit GameObject oluştur
-            hexObj = new GameObject($"Hex_{q}_{r}");
-            hexObj.transform.position = hex.worldPosition;
-            hexObj.transform.rotation = Quaternion.identity;
-            hexObj.transform.SetParent(parent ?? transform);
-
-            // Hex layer'ı ayarla (layer yoksa default layer kullan)
-            int hexLayer = LayerMask.NameToLayer("Hexes");
-            if (hexLayer != -1)
-            {
-                hexObj.layer = hexLayer;
-            }
-
-            // Components ekle
-            SpriteRenderer sr = hexObj.AddComponent<SpriteRenderer>();
-            Sprite hexSprite = CreateHexSprite();
-            if (hexSprite != null)
-            {
-                sr.sprite = hexSprite;
-            }
-            sr.color = new Color(0.9f, 0.9f, 0.9f, Application.isPlaying ? 0.8f : 0.3f);
-            sr.sortingOrder = -10; // Hex'ler en arkada
-
-            PolygonCollider2D collider = hexObj.AddComponent<PolygonCollider2D>();
-            collider.isTrigger = true;
-            Vector2[] hexColliderPoints = new Vector2[6];
-            for (int i = 0; i < 6; i++)
-            {
-                float angle = i * 60f * Mathf.Deg2Rad;
-                hexColliderPoints[i] = new Vector2(
-                    Hex.HEX_SIZE * 0.9f * Mathf.Cos(angle),
-                    Hex.HEX_SIZE * 0.9f * Mathf.Sin(angle)
-                );
-            }
-            collider.points = hexColliderPoints;
+            hexObj = Instantiate(selectedPrefab, hex.worldPosition, Quaternion.identity, parent ?? transform);
         }
         else
         {
-            // Prefab var, normal instantiate
-            if (Application.isPlaying)
+#if UNITY_EDITOR
+            if (UnityEditor.PrefabUtility.GetPrefabAssetType(selectedPrefab) != UnityEditor.PrefabAssetType.NotAPrefab)
             {
-                hexObj = Instantiate(hexPrefab, hex.worldPosition, Quaternion.identity, parent ?? transform);
+                hexObj = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(selectedPrefab, parent ?? transform);
+                hexObj.transform.position = hex.worldPosition;
+                hexObj.transform.rotation = Quaternion.identity;
             }
             else
             {
-#if UNITY_EDITOR
-                // Editörde prefab kullan
-                if (UnityEditor.PrefabUtility.GetPrefabAssetType(hexPrefab) != UnityEditor.PrefabAssetType.NotAPrefab)
-                {
-                    hexObj = (GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(hexPrefab, parent ?? transform);
-                    hexObj.transform.position = hex.worldPosition;
-                    hexObj.transform.rotation = Quaternion.identity;
-                }
-                else
-                {
-                    hexObj = Instantiate(hexPrefab, hex.worldPosition, Quaternion.identity, parent ?? transform);
-                }
-#else
-                hexObj = Instantiate(hexPrefab, hex.worldPosition, Quaternion.identity, parent ?? transform);
-#endif
+                hexObj = Instantiate(selectedPrefab, hex.worldPosition, Quaternion.identity, parent ?? transform);
             }
-            hexObj.name = $"Hex_{q}_{r}";
+#else
+        hexObj = Instantiate(selectedPrefab, hex.worldPosition, Quaternion.identity, parent ?? transform);
+#endif
+        }
 
-            // Editörde hex'leri yarı saydam yap
-            if (!Application.isPlaying)
+        hexObj.name = $"Hex_{q}_{r}";
+
+        // Editörde hex'leri yarı saydam yap
+        if (!Application.isPlaying)
+        {
+            SpriteRenderer sr = hexObj.GetComponent<SpriteRenderer>();
+            if (sr != null)
             {
-                SpriteRenderer sr = hexObj.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                {
-                    Color c = sr.color;
-                    c.a = 0.3f;
-                    sr.color = c;
-                }
+                Color c = sr.color;
+                c.a = 0.3f;
+                sr.color = c;
             }
         }
 
@@ -285,52 +260,32 @@ public class GridManager : MonoBehaviour
         }
         hexTile.Initialize(hex);
     }
-
+    GameObject GetPrefabForColumn(int q)
+    {
+        // Çift sütunlar (0, 2, 4, 6...) -> evenColumnPrefab
+        // Tek sütunlar (1, 3, 5, 7...) -> oddColumnPrefab
+        if (q % 2 == 0)
+        {
+            if (evenColumnPrefab == null)
+            {
+                Debug.LogError("Even Column Prefab is not assigned!");
+            }
+            return evenColumnPrefab; // BG-1
+        }
+        else
+        {
+            if (oddColumnPrefab == null)
+            {
+                Debug.LogError("Odd Column Prefab is not assigned!");
+            }
+            return oddColumnPrefab;  // BG-2
+        }
+    }
     void CreateSimpleHexPrefab()
     {
-        // Not: Editörde runtime'da prefab oluşturamayız, 
-        // bu yüzden bu metod artık sadece sprite oluşturmak için kullanılacak
-
-        // Eğer play mode'daysa eski yöntemi kullan
-        if (Application.isPlaying)
-        {
-            GameObject hex = new GameObject("HexPrefab");
-
-            // Layer kontrolü
-            int hexLayer = LayerMask.NameToLayer("Hexes");
-            if (hexLayer != -1)
-            {
-                hex.layer = hexLayer;
-            }
-
-            // Sprite Renderer ekle
-            SpriteRenderer sr = hex.AddComponent<SpriteRenderer>();
-            Sprite hexSprite = CreateHexSprite();
-            if (hexSprite != null)
-            {
-                sr.sprite = hexSprite;
-            }
-            sr.color = new Color(0.9f, 0.9f, 0.9f, 0.8f);
-            sr.sortingOrder = -10; // Hex'ler en arkada
-
-            // Manuel hex collider oluştur
-            PolygonCollider2D collider = hex.AddComponent<PolygonCollider2D>();
-            collider.isTrigger = true;
-            Vector2[] hexColliderPoints = new Vector2[6];
-            for (int i = 0; i < 6; i++)
-            {
-                float angle = i * 60f * Mathf.Deg2Rad;
-                hexColliderPoints[i] = new Vector2(
-                    Hex.HEX_SIZE * 0.9f * Mathf.Cos(angle),
-                    Hex.HEX_SIZE * 0.9f * Mathf.Sin(angle)
-                );
-            }
-            collider.points = hexColliderPoints;
-
-            hexPrefab = hex;
-            hex.SetActive(false);
-        }
-        // Editörde prefab null bırak, CreateHexAt her hex'i manuel oluşturacak
+        // Artık kendi hex'i oluşturmuyor
+        // Sadece prefab'ları kullanıyor
+        Debug.Log("Using assigned prefabs only - no fallback hex creation");
     }
 
     public Hex GetNearestHex(Vector3 worldPosition)

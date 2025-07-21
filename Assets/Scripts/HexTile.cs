@@ -5,11 +5,6 @@ public class HexTile : MonoBehaviour
     [Header("Hex Data")]
     [SerializeField] private Hex hexData;
 
-    [Header("Visual Feedback")]
-    [SerializeField] private Color normalColor = new Color(0.8f, 0.8f, 0.8f, 0.3f);
-    [SerializeField] private Color hoverColor = new Color(1f, 1f, 0.5f, 0.5f);
-    [SerializeField] private Color occupiedColor = new Color(1f, 0.5f, 0.5f, 0.5f);
-
     [Header("Coordinate Display")]
     [SerializeField] private bool showCoordinates = false;
     [SerializeField] private float textSize = 0.0f;
@@ -37,7 +32,7 @@ public class HexTile : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         CreateCoordinateText();
-        UpdateVisuals();
+
     }
 
     void CreateCoordinateText()
@@ -73,15 +68,15 @@ public class HexTile : MonoBehaviour
         if (meshRenderer != null)
         {
             meshRenderer.sortingLayerName = "Default";
-            meshRenderer.sortingOrder = 10; // Hex'lerin üstünde görünsün
+            meshRenderer.sortingOrder = 0; // Hex'lerin üstünde görünsün
         }
 
-        // Z pozisyonunu biraz öne al
-        textObject.transform.position = new Vector3(
-            transform.position.x,
-            transform.position.y,
-            transform.position.z - 0.1f
-        );
+        //// Z pozisyonunu biraz öne al
+        //textObject.transform.position = new Vector3(
+        //    transform.position.x,
+        //    transform.position.y,
+        //    transform.position.z - 0.1f
+        //);
     }
 
     void CleanupCoordinateText()
@@ -115,7 +110,7 @@ public class HexTile : MonoBehaviour
     void OnMouseEnter()
     {
         isMouseOver = true;
-        UpdateVisuals();
+
 
         // Debug bilgisi
         //Debug.Log($"Mouse over hex: {hexData}");
@@ -124,7 +119,7 @@ public class HexTile : MonoBehaviour
     void OnMouseExit()
     {
         isMouseOver = false;
-        UpdateVisuals();
+
     }
 
     void OnMouseDown()
@@ -137,30 +132,14 @@ public class HexTile : MonoBehaviour
         }
     }
 
-    void UpdateVisuals()
-    {
-        if (spriteRenderer == null) return;
 
-        Color targetColor = normalColor;
-
-        if (hexData.isOccupied)
-        {
-            targetColor = occupiedColor;
-        }
-        else if (isMouseOver)
-        {
-            targetColor = hoverColor;
-        }
-
-        spriteRenderer.color = targetColor;
-    }
 
     // Hex'in durumunu güncelle
     public void SetOccupied(bool occupied, GameObject occupyingObject = null)
     {
         hexData.isOccupied = occupied;
         hexData.occupiedBy = occupyingObject;
-        UpdateVisuals();
+
     }
 
     void OnValidate()

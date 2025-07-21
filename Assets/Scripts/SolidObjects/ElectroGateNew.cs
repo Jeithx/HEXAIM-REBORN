@@ -145,19 +145,19 @@ public class ElectroGateNew : MonoBehaviour, IDecoyable
         while (isChecking)
         {
             checkCount++;
-            Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Check #{checkCount}");
+            //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Check #{checkCount}");
 
             bool buttonsActive = electroButtonManagerScript?.IsElectricityActive() ?? false;
-            Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Buttons active: {buttonsActive}");
+            //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Buttons active: {buttonsActive}");
 
             if (buttonsActive)
             {
-                Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Buttons are active, looking for facing gate...");
+                //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Buttons are active, looking for facing gate...");
                 ElectroGateNew facingGate = GetFacingGate();
 
                 if (facingGate != null)
                 {
-                    Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Found facing gate: {facingGate.gameObject.name}");
+                    //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Found facing gate: {facingGate.gameObject.name}");
 
                     // Her iki gate de müsait mi kontrol et
                     bool imFree = !isElectricityActive;
@@ -184,23 +184,23 @@ public class ElectroGateNew : MonoBehaviour, IDecoyable
                     }
                     else
                     {
-                        Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - One or both gates are busy, waiting...");
+                        //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - One or both gates are busy, waiting...");
                     }
                 }
                 else
                 {
-                    Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - No facing gate found");
+                    //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - No facing gate found");
                 }
             }
             else
             {
-                Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Buttons not active, waiting...");
+                //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Buttons not active, waiting...");
             }
 
             yield return new WaitForSeconds(checkingInterval);
         }
 
-        Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Loop ended after {checkCount} checks");
+        //Debug.Log($"[CHECKING LOOP] Gate {gameObject.name} - Loop ended after {checkCount} checks");
     }
 
     // === DAMAGE DÖNGÜSÜ ===
