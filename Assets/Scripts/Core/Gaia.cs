@@ -13,9 +13,9 @@ public class Gaia : MonoBehaviour
     [SerializeField] private float pulseSpeed = 2f;
     [SerializeField] private float pulseAmount = 0.1f;
 
-    [Header("Hex Selection (Editor)")]
-    [SerializeField] private int hexSelectionRadius = 3;
-    [SerializeField] private bool autoSelectNearbyHexes = false;
+    //[Header("Hex Selection (Editor)")]
+    //[SerializeField] private int hexSelectionRadius = 3;
+    //[SerializeField] private bool autoSelectNearbyHexes = false;
 
     private Health health;
     private float pulseTimer = 0f;
@@ -65,7 +65,20 @@ public class Gaia : MonoBehaviour
 
     void OnGaiaDamage(int damage)
     {
-        Debug.Log($"Gaia took {damage} damage!");
+        Debug.Log($"=== GAIA ACTIVATED at {transform.position} ===");
+
+        // Restore işlemini başlat
+        if (GaiaManager.Instance != null && restoreHexCoordinates.Count > 0)
+        {
+            GaiaManager.Instance.RestoreHexes(restoreHexCoordinates, transform.position);
+        }
+        else
+        {
+            Debug.LogWarning("GaiaManager not found or no hexes to restore!");
+        }
+
+        // Gaia kendini yok eder
+        //StartCoroutine(DestroyAfterEffect());
     }
 
     void OnGaiaDeath()
@@ -83,56 +96,56 @@ public class Gaia : MonoBehaviour
         }
 
         // Gaia kendini yok eder
-        StartCoroutine(DestroyAfterEffect());
+        //StartCoroutine(DestroyAfterEffect());
     }
 
-    System.Collections.IEnumerator DestroyAfterEffect()
-    {
-        // Görsel efekt için kısa bir bekleme
-        yield return new WaitForSeconds(0.1f);
+    //System.Collections.IEnumerator DestroyAfterEffect()
+    //{
+    //    // Görsel efekt için kısa bir bekleme
+    //    yield return new WaitForSeconds(0.1f);
 
-        // Not: Eğer Gaia kendisi de restore alanındaysa ve başka bir Gaia 
-        // onu restore ederse, yeni Gaia oluşturulacak
-        Destroy(gameObject);
-    }
+    //    // Not: Eğer Gaia kendisi de restore alanındaysa ve başka bir Gaia 
+    //    // onu restore ederse, yeni Gaia oluşturulacak
+    //    Destroy(gameObject);
+    //}
 
     // Inspector'dan hex seçimi için yardımcı metod
-    [ContextMenu("Select Nearby Hexes")]
-    void SelectNearbyHexes()
-    {
-        restoreHexCoordinates.Clear();
+    //[ContextMenu("Select Nearby Hexes")]
+    //void SelectNearbyHexes()
+    //{
+    //    restoreHexCoordinates.Clear();
 
-        if (GridManager.Instance == null)
-        {
-            Debug.LogError("GridManager not found! Start the game first.");
-            return;
-        }
+    //    if (GridManager.Instance == null)
+    //    {
+    //        Debug.LogError("GridManager not found! Start the game first.");
+    //        return;
+    //    }
 
-        // Gaia'nın bulunduğu hex
-        Hex centerHex = GridManager.Instance.GetHexAt(transform.position);
-        if (centerHex == null) return;
+    //    Gaia'nın bulunduğu hex
+    //    Hex centerHex = GridManager.Instance.GetHexAt(transform.position);
+    //    if (centerHex == null) return;
 
-        // Belirtilen yarıçaptaki tüm hex'leri bul
-        for (int q = -hexSelectionRadius; q <= hexSelectionRadius; q++)
-        {
-            for (int r = -hexSelectionRadius; r <= hexSelectionRadius; r++)
-            {
-                int s = -q - r;
-                if (Mathf.Abs(s) <= hexSelectionRadius)
-                {
-                    Vector2Int coords = new Vector2Int(centerHex.q + q, centerHex.r + r);
-                    Hex hex = GridManager.Instance.GetHexAt(coords.x, coords.y);
+    //    Belirtilen yarıçaptaki tüm hex'leri bul
+    //    for (int q = -hexSelectionRadius; q <= hexSelectionRadius; q++)
+    //    {
+    //        for (int r = -hexSelectionRadius; r <= hexSelectionRadius; r++)
+    //        {
+    //            int s = -q - r;
+    //            if (Mathf.Abs(s) <= hexSelectionRadius)
+    //            {
+    //                Vector2Int coords = new Vector2Int(centerHex.q + q, centerHex.r + r);
+    //                Hex hex = GridManager.Instance.GetHexAt(coords.x, coords.y);
 
-                    if (hex != null)
-                    {
-                        restoreHexCoordinates.Add(coords);
-                    }
-                }
-            }
-        }
+    //                if (hex != null)
+    //                {
+    //                    restoreHexCoordinates.Add(coords);
+    //                }
+    //            }
+    //        }
+    //    }
 
-        Debug.Log($"Selected {restoreHexCoordinates.Count} hexes around Gaia");
-    }
+    //    Debug.Log($"Selected {restoreHexCoordinates.Count} hexes around Gaia");
+    //}
 
     [ContextMenu("Clear Hex Selection")]
     void ClearHexSelection()

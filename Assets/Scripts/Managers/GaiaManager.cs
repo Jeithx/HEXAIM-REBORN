@@ -39,7 +39,7 @@ public class GaiaManager : MonoBehaviour
     [Header("Prefabs)")]
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject wallPrefab;
-    //[SerializeField] private GameObject hayPrefab;
+    [SerializeField] private GameObject hayPrefab;
     //[SerializeField] private GameObject hostagePrefab;
     [SerializeField] private GameObject gaiaPrefab;
 
@@ -422,7 +422,7 @@ public class GaiaManager : MonoBehaviour
         {
             case "Player": return playerPrefab;
             case "Wall": return wallPrefab;
-            //case "Hay": return hayPrefab;
+            case "Hay": return hayPrefab;
             //case "Hostage": return hostagePrefab;
             case "Gaia": return gaiaPrefab;
 
