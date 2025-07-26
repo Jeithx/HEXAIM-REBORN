@@ -10,7 +10,14 @@ public class Health : MonoBehaviour
     [Header("Visual Settings")]
     [SerializeField] private float deadAlpha = 0.3f; // Ölünce ne kadar soluk görünecek (0-1 arası)
 
-    private int currentHp;
+    [Header("Animation Settings")]
+    [SerializeField] private HeartAnimator heartAnimator; // Referans kalp animatörüne
+    [SerializeField] private ShineDumpAnimator shineDumpAnimator; // Referans kalp animatörüne
+    [SerializeField] private CharacterAnimator characterAnimator; // Referans karakter animatörüne
+
+
+
+    public int currentHp;
     private bool isDead = false;
     private SpriteRenderer[] allSpriteRenderers; // Tüm sprite renderer'ları sakla
     private Color[] originalColors; // Orijinal renkleri sakla
@@ -20,6 +27,7 @@ public class Health : MonoBehaviour
     public System.Action OnRevive;
     public System.Action<int> OnHealthChanged;
     public System.Action<int> OnTakeDamage;
+
 
     private int aliveLayer;
 
@@ -41,30 +49,52 @@ public class Health : MonoBehaviour
         {
             originalColors[i] = allSpriteRenderers[i].color;
         }
-    }
 
-    private void SetAllSpritesAlpha(float alpha)
-    {
-        for (int i = 0; i < allSpriteRenderers.Length; i++)
+        if (heartAnimator == null)
         {
-            Color fadeColor = originalColors[i];
-            fadeColor.a = alpha;
-            allSpriteRenderers[i].color = fadeColor;
+            heartAnimator = GetComponentInChildren<HeartAnimator>();
+        }
+
+        if (shineDumpAnimator == null)
+        {
+            shineDumpAnimator = GetComponentInChildren<ShineDumpAnimator>();
         }
     }
 
-    private void RestoreOriginalColors()
-    {
-        for (int i = 0; i < allSpriteRenderers.Length; i++)
-        {
-            allSpriteRenderers[i].color = originalColors[i];
-        }
-    }
+    //private void SetAllSpritesAlpha(float alpha)
+    //{
+    //    for (int i = 0; i < allSpriteRenderers.Length; i++)
+    //    {
+
+    //        if (heartAnimator != null && allSpriteRenderers[i] == heartAnimator.GetHeartSpriteRenderer())
+    //            continue;//şimdilik
+    //        if (shineDumpAnimator != null && allSpriteRenderers[i] == shineDumpAnimator.GetHeartSpriteRenderer())
+    //            continue;//şimdilik
+
+    //        Color fadeColor = originalColors[i];
+    //        fadeColor.a = alpha;
+    //        allSpriteRenderers[i].color = fadeColor;
+    //    }
+    //}
+
+    //private void RestoreOriginalColors()
+    //{
+    //    for (int i = 0; i < allSpriteRenderers.Length; i++)
+    //    {
+
+    //        if (heartAnimator != null && allSpriteRenderers[i] == heartAnimator.GetHeartSpriteRenderer())
+    //            continue;//şimdilik
+    //        if (shineDumpAnimator != null && allSpriteRenderers[i] == shineDumpAnimator.GetHeartSpriteRenderer())
+    //            continue;//şimdilik
+    //        allSpriteRenderers[i].color = originalColors[i];
+    //    }
+    //}
 
     void Start()
     {
         currentHp = startingHp;
         OnHealthChanged?.Invoke(currentHp);
+
     }
 
     public void TakeDamage(int damage)
@@ -77,6 +107,19 @@ public class Health : MonoBehaviour
         OnHealthChanged?.Invoke(currentHp);
         //Debug.Log($"{gameObject.name} took {damage} damage. HP: {currentHp}/{maxHp}");
         OnTakeDamage?.Invoke(damage); // Event'i tetikle
+
+
+        // Heart animator'a hasar bildir
+        if (heartAnimator != null)
+        {
+            heartAnimator.OnDamageTaken(currentHp, damage);
+        }
+        // ShineDump animator'a hasar bildir
+        if (shineDumpAnimator != null)
+        {
+            shineDumpAnimator.OnDamageTaken(currentHp, damage);
+        }
+
 
         if (currentHp <= 0)
         {
@@ -95,6 +138,16 @@ public class Health : MonoBehaviour
             return; // Revive zaten 1 HP veriyor, ekstra heal ekleme
         }
 
+        // >>> ZATEN FULL HP İSE: deny çal ve çık
+        if (currentHp >= maxHp)
+        {
+            heartAnimator?.PlayDenyAnimation();
+            return;
+        }
+
+
+
+
         // HP'yi artır ama cap'i geçme
         int oldHp = currentHp;
         currentHp = Mathf.Min(currentHp + healAmount, maxHp);
@@ -102,8 +155,25 @@ public class Health : MonoBehaviour
         if (currentHp != oldHp) // Gerçekten heal olduysa
         {
             OnHealthChanged?.Invoke(currentHp);
+
+
+            // Heart animator'a heal bildir
+            if (heartAnimator != null)
+            {
+                heartAnimator.OnHealed();
+            }
+            // ShineDump animator'a heal bildir
+            if (shineDumpAnimator != null)
+            {
+                shineDumpAnimator.OnHealed();
+            }
+
+
             Debug.Log($"{gameObject.name} healed {healAmount}. HP: {currentHp}/{maxHp}");
         }
+
+
+        
     }
 
     public void Die()
@@ -115,7 +185,7 @@ public class Health : MonoBehaviour
         OnDeath?.Invoke();
         //Debug.Log($"{gameObject.name} died!");
 
-        SetAllSpritesAlpha(deadAlpha); // Tüm sprite'ları soluk yap
+        //SetAllSpritesAlpha(deadAlpha); // Tüm sprite'ları soluk yap
 
         gameObject.layer = LayerMask.NameToLayer("DeadCharacters");
         //Debug.Log($"{gameObject.name} moved to DeadCharacters layer");
@@ -125,6 +195,8 @@ public class Health : MonoBehaviour
     {
         if (isPermanentlyDead || !isDead) return; // Zaten canlıysa revive etme
 
+        characterAnimator?.OnRevive(); // Revive animasyonunu tetikle
+
         isDead = false;
         currentHp = 1;
         OnRevive?.Invoke();
@@ -132,7 +204,7 @@ public class Health : MonoBehaviour
         Debug.Log($"{gameObject.name} revived!");
 
         // Tüm sprite'ları normale döndür
-        RestoreOriginalColors();
+        //RestoreOriginalColors();
         gameObject.layer = aliveLayer;
 
 

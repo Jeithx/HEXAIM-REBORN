@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 2284969578353103778}
   - component: {fileID: -3763633049604837288}
   - component: {fileID: 1569655807554690686}
+  - component: {fileID: -8628728461890002212}
   m_Layer: 0
   m_Name: Hunter
   m_TagString: Untagged
@@ -296,6 +297,9 @@ MonoBehaviour:
   startingHp: 1
   isPermanentlyDead: 0
   deadAlpha: 0.3
+  heartAnimator: {fileID: 0}
+  shineDumpAnimator: {fileID: 0}
+  currentHp: 0
 --- !u!114 &1569655807554690686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,3 +320,24 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 87
   hasHeadphones: 1
+--- !u!95 &-8628728461890002212
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8870545649125115237}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
