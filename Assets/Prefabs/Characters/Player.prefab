@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: -5870442065193516971}
   - component: {fileID: 1353611321006229162}
   - component: {fileID: -3945759097941798311}
+  - component: {fileID: -4613218753768029874}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -162,6 +163,7 @@ MonoBehaviour:
   deadAlpha: 0.3
   heartAnimator: {fileID: 0}
   shineDumpAnimator: {fileID: 0}
+  characterAnimator: {fileID: 0}
   currentHp: 0
 --- !u!50 &1353611321006229162
 Rigidbody2D:
@@ -211,6 +213,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-4613218753768029874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421577227912791996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65660de7eb87fc244a349e7a65ec5bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!1 &481421934614110259
 GameObject:
   m_ObjectHideFlags: 0

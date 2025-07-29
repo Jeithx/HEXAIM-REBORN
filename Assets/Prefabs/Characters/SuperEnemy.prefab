@@ -575,6 +575,7 @@ GameObject:
   - component: {fileID: -3763633049604837288}
   - component: {fileID: 6113109646016345112}
   - component: {fileID: 7525764408829851582}
+  - component: {fileID: -7999910110403724327}
   m_Layer: 0
   m_Name: SuperEnemy
   m_TagString: Untagged
@@ -735,6 +736,7 @@ MonoBehaviour:
   deadAlpha: 0.3
   heartAnimator: {fileID: 0}
   shineDumpAnimator: {fileID: 0}
+  characterAnimator: {fileID: 0}
   currentHp: 0
 --- !u!114 &6113109646016345112
 MonoBehaviour:
@@ -774,3 +776,16 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-7999910110403724327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8870545649125115237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65660de7eb87fc244a349e7a65ec5bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}

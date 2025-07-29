@@ -7,21 +7,13 @@
 public class LockWorldZ : MonoBehaviour
 {
     float initialWorldZ;          // sahnedeki başlangıç açısı
-    private SpriteRenderer spriteRenderer; // 2D sprite renderer için
+
 
     void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         initialWorldZ = transform.eulerAngles.z;
     }
 
-    private void Update()
-    {
-        SpriteRenderer sr = GetComponentInParent<SpriteRenderer>();
-        Color color = sr.color;
-        color.a = spriteRenderer.color.a;
-
-    }
 
     void LateUpdate()             // parent'lar döndükten sonra çalışır
     {

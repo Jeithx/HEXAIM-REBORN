@@ -59,6 +59,10 @@ public class Health : MonoBehaviour
         {
             shineDumpAnimator = GetComponentInChildren<ShineDumpAnimator>();
         }
+        if (characterAnimator == null)
+        {
+            characterAnimator = GetComponent<CharacterAnimator>();
+        }
     }
 
     //private void SetAllSpritesAlpha(float alpha)
@@ -180,6 +184,8 @@ public class Health : MonoBehaviour
     {
         if (isDead) return;
 
+        characterAnimator?.OnDeath(); // Revive animasyonunu tetikle
+
         isDead = true;
         currentHp = 0;
         OnDeath?.Invoke();
@@ -196,6 +202,7 @@ public class Health : MonoBehaviour
         if (isPermanentlyDead || !isDead) return; // Zaten canlıysa revive etme
 
         characterAnimator?.OnRevive(); // Revive animasyonunu tetikle
+
 
         isDead = false;
         currentHp = 1;

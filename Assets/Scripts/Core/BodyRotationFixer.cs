@@ -1,9 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-public class KeepUpright : MonoBehaviour
-{
-    void LateUpdate()  // Body d�nd�kten sonra
+public class BodyRotationFixer : MonoBehaviour
+{ 
+
+    void LateUpdate()
     {
-        transform.rotation = Quaternion.identity;
-    }
+    // Rotation'ı sıfırla
+    transform.rotation = Quaternion.identity; }
+
 }
