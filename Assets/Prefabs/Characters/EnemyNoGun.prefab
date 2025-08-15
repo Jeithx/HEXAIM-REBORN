@@ -534,7 +534,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.91
+  m_Radius: 0.95
 --- !u!114 &-3763633049604837288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -554,6 +554,7 @@ MonoBehaviour:
   heartAnimator: {fileID: 0}
   shineDumpAnimator: {fileID: 0}
   characterAnimator: {fileID: 0}
+  fixedAnimator: {fileID: 0}
   currentHp: 0
 --- !u!114 &-1794621893742955209
 MonoBehaviour:

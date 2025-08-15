@@ -58,6 +58,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 2236603706119727223, guid: 7b3676b736d2caf48aa11a1dad06ea61, type: 3}
   firePoint: {fileID: 7405407519366016291}
   bulletSpeed: 5
+  playerEyesAnimator: {fileID: 0}
 --- !u!212 &717997292541350815
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -144,7 +145,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.1
+  m_Radius: 0.95
 --- !u!114 &-5870442065193516971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +165,8 @@ MonoBehaviour:
   heartAnimator: {fileID: 0}
   shineDumpAnimator: {fileID: 0}
   characterAnimator: {fileID: 0}
+  fixedAnimator: {fileID: 0}
+  eyesAnimator: {fileID: 0}
   currentHp: 0
 --- !u!50 &1353611321006229162
 Rigidbody2D:
@@ -225,7 +228,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65660de7eb87fc244a349e7a65ec5bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 0}
+  animator: {fileID: -3945759097941798311}
 --- !u!1 &481421934614110259
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,6 +240,7 @@ GameObject:
   - component: {fileID: 6265575388401532557}
   - component: {fileID: 9157470153476798911}
   - component: {fileID: 6583822290136894605}
+  - component: {fileID: 5925141230149209074}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
@@ -332,6 +336,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5925141230149209074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481421934614110259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 965506a1a2476d74b9cdf20f24ce80a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &899223529787843904
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,6 +632,7 @@ GameObject:
   - component: {fileID: 2919892066333262985}
   - component: {fileID: 526453869117390496}
   - component: {fileID: 3966701453995554128}
+  - component: {fileID: 2171082119360735127}
   m_Layer: 0
   m_Name: Fixed
   m_TagString: Untagged
@@ -700,5 +717,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed87f73bd2239354191e2f5bc37bb5bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2171082119360735127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8306922973688855700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbc2451f770f7348b487829714a0c5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

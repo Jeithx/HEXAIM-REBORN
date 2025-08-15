@@ -14,13 +14,15 @@ public class Health : MonoBehaviour
     [SerializeField] private HeartAnimator heartAnimator; // Referans kalp animatörüne
     [SerializeField] private ShineDumpAnimator shineDumpAnimator; // Referans kalp animatörüne
     [SerializeField] private CharacterAnimator characterAnimator; // Referans karakter animatörüne
+    [SerializeField] private Animator fixedAnimator; // Referans fixed animatörüne
+    [SerializeField] private Animator eyesAnimator; // Referans göz animatörüne
 
 
 
     public int currentHp;
     private bool isDead = false;
     private SpriteRenderer[] allSpriteRenderers; // Tüm sprite renderer'ları sakla
-    private Color[] originalColors; // Orijinal renkleri sakla
+    //private Color[] originalColors; // Orijinal renkleri sakla
 
     // Events
     public System.Action OnDeath;
@@ -42,13 +44,16 @@ public class Health : MonoBehaviour
         aliveLayer = gameObject.layer;
 
         allSpriteRenderers = GetComponentsInChildren<SpriteRenderer>();
-        originalColors = new Color[allSpriteRenderers.Length];
+        //originalColors = new Color[allSpriteRenderers.Length];
 
         // Orijinal renkleri kaydet
-        for (int i = 0; i < allSpriteRenderers.Length; i++)
-        {
-            originalColors[i] = allSpriteRenderers[i].color;
-        }
+        //for (int i = 0; i < allSpriteRenderers.Length; i++)
+        //{
+        //    originalColors[i] = allSpriteRenderers[i].color;
+        //}
+
+       fixedAnimator = GetComponentInChildren<FixedAnimator>()?.GetComponent<Animator>();
+       eyesAnimator = GetComponentInChildren<EyesAnimator>()?.GetComponent<Animator>();
 
         if (heartAnimator == null)
         {
@@ -125,6 +130,7 @@ public class Health : MonoBehaviour
         }
 
 
+
         if (currentHp <= 0)
         {
             Die();
@@ -185,6 +191,9 @@ public class Health : MonoBehaviour
         if (isDead) return;
 
         characterAnimator?.OnDeath(); // Revive animasyonunu tetikle
+        fixedAnimator?.SetTrigger("Death"); // Fixed animatör için ölüm tetiklemesi
+        eyesAnimator?.SetTrigger("Death"); // Göz animatöründe ölüm tetiklemesi
+        Debug.Log($"{gameObject.name} is dying...");
 
         isDead = true;
         currentHp = 0;
@@ -201,7 +210,11 @@ public class Health : MonoBehaviour
     {
         if (isPermanentlyDead || !isDead) return; // Zaten canlıysa revive etme
 
+        fixedAnimator?.SetTrigger("Revive"); // Fixed animatör için canlandırma tetiklemesi
+        eyesAnimator?.SetTrigger("Revive"); // Göz animatöründe canlandırma tetiklemesi
+
         characterAnimator?.OnRevive(); // Revive animasyonunu tetikle
+        Debug.Log($"{gameObject.name} is reviving...");
 
 
         isDead = false;

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 690240691571182545}
   - component: {fileID: 6932430668774236768}
   - component: {fileID: 1918964808764950677}
+  - component: {fileID: 573495364169919816}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
@@ -106,6 +107,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &573495364169919816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230704979899621303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 965506a1a2476d74b9cdf20f24ce80a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1150731980982245681
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,6 +131,7 @@ GameObject:
   - component: {fileID: 4873125638015182866}
   - component: {fileID: 8305549364202925416}
   - component: {fileID: 4693285901471941023}
+  - component: {fileID: 718201778940363238}
   m_Layer: 0
   m_Name: Fixed
   m_TagString: Fixed
@@ -225,6 +239,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &718201778940363238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1150731980982245681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbc2451f770f7348b487829714a0c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1170753698021030413
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,7 +624,6 @@ GameObject:
   - component: {fileID: -3763633049604837288}
   - component: {fileID: 9093377473303156119}
   - component: {fileID: 4776002342760570826}
-  - component: {fileID: 5918693932346949214}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -740,7 +765,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.04
+  m_Radius: 0.95
 --- !u!114 &-1737067485763456489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -777,6 +802,8 @@ MonoBehaviour:
   heartAnimator: {fileID: 0}
   shineDumpAnimator: {fileID: 0}
   characterAnimator: {fileID: 0}
+  fixedAnimator: {fileID: 0}
+  eyesAnimator: {fileID: 0}
   currentHp: 0
 --- !u!95 &9093377473303156119
 Animator:
@@ -812,16 +839,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 9093377473303156119}
---- !u!114 &5918693932346949214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8870545649125115237}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ffbc2451f770f7348b487829714a0c5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 0}

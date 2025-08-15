@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 public class PlayerController : MonoBehaviour
@@ -9,9 +11,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform firePoint;
     [SerializeField] private float bulletSpeed = 5f;
 
-    //[Header("Player Visual")]
-    //[SerializeField] private Color playerColor = Color.blue;
-    //[SerializeField] private float playerSize = 0.3f;
+    [Header("PlayerAnim")]
+    [SerializeField] private Animator playerEyesAnimator;
+
+    private bool IsFiring;
+
+    int hidden;
+    int defaultLayer;
+
 
     // Player state
     private bool canFire = true;
@@ -19,7 +26,9 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-
+        hidden = LayerMask.NameToLayer("Hidden");
+         defaultLayer = LayerMask.NameToLayer("Default");
+        playerEyesAnimator = GetComponentInChildren<EyesAnimator>()?.GetComponent<Animator>();
         playerCamera = Camera.main;
     }
 
@@ -36,18 +45,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleRotation();
-        //HandleShooting();
 
-        //// TEST KODLARI (geçici)
-        //if (Input.GetKeyDown(KeyCode.Q)) // Q tuşu = hasar al
-        //{
-        //    GetComponent<Health>()?.TakeDamage(1);
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.E)) // E tuşu = iyileş
-        //{
-        //    GetComponent<Health>()?.Heal(1);
-        //}
 
         if (Input.GetKeyDown(KeyCode.R)) // R tuşu = bölümü sıfırlama kodu, basit birtane, şuanki bölümü alır onu loadlar
         {
@@ -87,12 +85,25 @@ public class PlayerController : MonoBehaviour
         return canFire && bulletPrefab != null && firePoint != null;
     }
 
+
     public void FireTowards(Vector3 targetWorldPos)
     {
-        if (!CanFire()) return;
 
-        // Mermi oluştur
+        if (!CanFire() || IsFiring) return; // Coroutine kontrolü
+
+        IsFiring = true;
+
+        playerEyesAnimator?.SetTrigger("Shoot");
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
+        bullet.layer = hidden; // Mermi gizli katmana alındı
+        StartCoroutine(DelayedFire(targetWorldPos, bullet));
+    }
+
+    private IEnumerator DelayedFire(Vector3 targetWorldPos, GameObject bullet)
+    {
+        // 0.383 saniye bekle
+        yield return new WaitForSeconds(0.383f);
+
 
         // Owner ayarla
         PlayerBullet playerBullet = bullet.GetComponent<PlayerBullet>();
@@ -100,18 +111,19 @@ public class PlayerController : MonoBehaviour
         {
             playerBullet.SetOwner(gameObject);
         }
-
         bullet.SetActive(true);
 
         // Yön hesapla ve ateş et
         Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+        bullet.layer = defaultLayer;
         if (bulletRb != null)
         {
             Vector2 fireDirection = (targetWorldPos - firePoint.position).normalized;
             bulletRb.velocity = fireDirection * bulletSpeed;
         }
-
         Debug.Log($"Player {gameObject.name} fired towards {targetWorldPos}!");
+
+        IsFiring = false; // Ateş etme işlemi tamamlandı
     }
 
     //void Fire()

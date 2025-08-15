@@ -474,6 +474,7 @@ GameObject:
   - component: {fileID: 3742628370172699083}
   - component: {fileID: 1927926324881539904}
   - component: {fileID: 1375091600719550998}
+  - component: {fileID: 6302494400433807773}
   m_Layer: 0
   m_Name: Fixed
   m_TagString: Untagged
@@ -558,6 +559,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed87f73bd2239354191e2f5bc37bb5bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6302494400433807773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8489763832006708761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffbc2451f770f7348b487829714a0c5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8870545649125115237
@@ -717,7 +730,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.865
+  m_Radius: 0.95
 --- !u!114 &-3763633049604837288
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,6 +750,7 @@ MonoBehaviour:
   heartAnimator: {fileID: 0}
   shineDumpAnimator: {fileID: 0}
   characterAnimator: {fileID: 0}
+  fixedAnimator: {fileID: 0}
   currentHp: 0
 --- !u!114 &6113109646016345112
 MonoBehaviour:
