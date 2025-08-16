@@ -121,7 +121,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.16
+  m_Radius: 0.0857
 --- !u!50 &1780345146011175057
 Rigidbody2D:
   serializedVersion: 4
@@ -163,4 +163,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyTime: 5
   damage: 1
-  bulletColor: {r: 1, g: 0.52010137, b: 0.015686274, a: 1}

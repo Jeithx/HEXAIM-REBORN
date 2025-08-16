@@ -32,6 +32,30 @@ public class MedicBullet : BaseBullet
             return;
         }
 
+
+
+        IRobot robot = hitObject.GetComponent<IRobot>();
+        if (robot != null)
+        {
+
+
+            // Bazooka değilse mermi yok olur
+            if (!robot.CanTakeDamageFrom(this))
+            {
+                // Robot'a mermi çarptı
+                robot.OnBulletHit(this);
+                DestroyBullet();
+                return;
+            }
+            else
+            {
+                // Bazooka ise robot yok olur
+                robot.DestroyRobot();
+                DestroyBullet();
+                return;
+            }
+        }
+
         // Karaktere çarparsa iyileştir
         Health health = hitObject.GetComponent<Health>();
         if (health != null)
