@@ -55,6 +55,9 @@ public class HasLaser : MonoBehaviour
         {
             if (lastHitLaser != null)
             {
+                // Eğer son çarpılan laser'da scared animasyonu varsa, onu kapat
+                lastHitLaser.gameObject.GetComponentInChildren<EyesAnimator>()?.GetComponent<Animator>()?.SetBool("IsScared", false);
+                lastHitLaser.gameObject.GetComponentInChildren<EyesAnimator>()?.GetComponent<Animator>()?.SetTrigger("ScaredOut");
                 lastHitLaser.laser = false; // Son çarpılan laser'ı kapat
                 lastHitLaser = null;
             }
@@ -96,6 +99,7 @@ public class HasLaser : MonoBehaviour
             if (targetLaser != null)
             {
                 lastHitLaser = targetLaser; // Son çarpılan laser'ı güncelle
+                targetLaser.gameObject.GetComponentInChildren<EyesAnimator>()?.GetComponent<Animator>()?.SetBool("IsScared", true);
                 targetLaser.laser = true; // Hedef laser'ı aktif et
             }
         }
